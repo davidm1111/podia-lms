@@ -7,7 +7,7 @@
     {
       "binding": "DB",
       "database_name": "lms-database",
-      "database_id": "YOUR_D1_DATABASE_ID_OPTIONAL"
+      "database_id": "37f451fe-8f60-4b42-b2de-d42847c1b2e3"
     }
   ]
 }
