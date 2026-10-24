@@ -1,11 +1,12 @@
-import type { Course, UserProgress, LessonComment } from '../types';
-import { defaultCourses } from '../data/sampleCourses';
+import type { Course, UserProgress, LessonComment, Student, AuthUser } from '../types';
+import { defaultCourses, defaultStudents } from '../data/sampleCourses';
 
-const COURSES_STORAGE_KEY = 'podia_lms_courses_v1';
-const PROGRESS_STORAGE_KEY = 'podia_lms_progress_v1';
-const USER_ROLE_KEY = 'podia_lms_user_role'; // 'student' | 'creator'
+const COURSES_STORAGE_KEY = 'aura_lms_courses_v2';
+const STUDENTS_STORAGE_KEY = 'aura_lms_students_v2';
+const AUTH_STORAGE_KEY = 'aura_lms_auth_v2';
+const PROGRESS_STORAGE_KEY = 'aura_lms_progress_v2';
 
-// Initialize or get stored courses
+// ----------------- Courses -----------------
 export function getStoredCourses(): Course[] {
   try {
     const raw = localStorage.getItem(COURSES_STORAGE_KEY);
@@ -46,34 +47,160 @@ export function deleteCourse(courseId: string): void {
   saveCourses(filtered);
 }
 
-// User Progress
-export function getStoredProgress(courseId: string): UserProgress {
+// ----------------- Students Management -----------------
+export function getStoredStudents(): Student[] {
   try {
-    const raw = localStorage.getItem(`${PROGRESS_STORAGE_KEY}_${courseId}`);
+    const raw = localStorage.getItem(STUDENTS_STORAGE_KEY);
+    if (!raw) {
+      localStorage.setItem(STUDENTS_STORAGE_KEY, JSON.stringify(defaultStudents));
+      return defaultStudents;
+    }
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length > 0 ? parsed : defaultStudents;
+  } catch (e) {
+    console.error('Error loading students:', e);
+    return defaultStudents;
+  }
+}
+
+export function saveStudents(students: Student[]): void {
+  try {
+    localStorage.setItem(STUDENTS_STORAGE_KEY, JSON.stringify(students));
+  } catch (e) {
+    console.error('Error saving students:', e);
+  }
+}
+
+export function addStudent(name: string, email: string, enrolledCourseIds: string[]): Student {
+  const students = getStoredStudents();
+  const newStudent: Student = {
+    id: `stud-${Date.now()}`,
+    name: name.trim(),
+    email: email.trim().toLowerCase(),
+    enrolledCourseIds,
+    status: 'active',
+    createdAt: new Date().toISOString(),
+  };
+  students.unshift(newStudent);
+  saveStudents(students);
+  return newStudent;
+}
+
+export function updateStudent(updated: Student): void {
+  const students = getStoredStudents();
+  const index = students.findIndex(s => s.id === updated.id);
+  if (index >= 0) {
+    students[index] = updated;
+    saveStudents(students);
+  }
+}
+
+export function deleteStudent(studentId: string): void {
+  const students = getStoredStudents().filter(s => s.id !== studentId);
+  saveStudents(students);
+}
+
+// ----------------- Authentication & Access Control -----------------
+export function getAuthUser(): AuthUser | null {
+  try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {
+    console.error('Error reading auth user:', e);
+  }
+  return null;
+}
+
+export function setAuthUser(user: AuthUser | null): void {
+  if (user) {
+    localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(user));
+  } else {
+    localStorage.removeItem(AUTH_STORAGE_KEY);
+  }
+}
+
+// Default Admin credentials (can be entered by instructor)
+export function loginAsAdmin(password: string): boolean {
+  // Allow 'admin123' or 'profesor'
+  const normalized = password.trim();
+  if (normalized === 'admin123' || normalized === 'profesor' || normalized === 'admin') {
+    const adminUser: AuthUser = {
+      role: 'admin',
+      id: 'admin-1',
+      name: 'Profesor / Administrador',
+      email: 'admin@academia.com',
+    };
+    setAuthUser(adminUser);
+    return true;
+  }
+  return false;
+}
+
+// Gated Student Login: Student MUST exist in the teacher's authorized students list
+export function loginAsStudent(email: string): { success: boolean; student?: Student; error?: string } {
+  const cleanEmail = email.trim().toLowerCase();
+  const students = getStoredStudents();
+  const found = students.find(s => s.email.toLowerCase() === cleanEmail);
+
+  if (!found) {
+    return {
+      success: false,
+      error: 'Correo no registrado. Por favor, solicita acceso al profesor del curso.',
+    };
+  }
+
+  if (found.status === 'inactive') {
+    return {
+      success: false,
+      error: 'Tu acceso como alumno ha sido pausado. Contacta al profesor.',
+    };
+  }
+
+  const studentUser: AuthUser = {
+    role: 'student',
+    id: found.id,
+    name: found.name,
+    email: found.email,
+  };
+  setAuthUser(studentUser);
+  return { success: true, student: found };
+}
+
+export function logout(): void {
+  setAuthUser(null);
+}
+
+// ----------------- User Progress -----------------
+export function getStoredProgress(courseId: string, userId: string = 'default'): UserProgress {
+  try {
+    const raw = localStorage.getItem(`${PROGRESS_STORAGE_KEY}_${courseId}_${userId}`);
     if (raw) {
       return JSON.parse(raw);
     }
   } catch (e) {
-    console.error('Error reading course progress:', e);
+    console.error('Error reading progress:', e);
   }
   return {
     courseId,
+    userId,
     completedLessonIds: [],
     notes: {},
     comments: [],
+    quizAnswers: {},
   };
 }
 
 export function saveProgress(progress: UserProgress): void {
   try {
-    localStorage.setItem(`${PROGRESS_STORAGE_KEY}_${progress.courseId}`, JSON.stringify(progress));
+    const userId = progress.userId || 'default';
+    localStorage.setItem(`${PROGRESS_STORAGE_KEY}_${progress.courseId}_${userId}`, JSON.stringify(progress));
   } catch (e) {
     console.error('Error saving progress:', e);
   }
 }
 
-export function toggleLessonCompletion(courseId: string, lessonId: string): boolean {
-  const progress = getStoredProgress(courseId);
+export function toggleLessonCompletion(courseId: string, lessonId: string, userId: string = 'default'): boolean {
+  const progress = getStoredProgress(courseId, userId);
   const isCompleted = progress.completedLessonIds.includes(lessonId);
   if (isCompleted) {
     progress.completedLessonIds = progress.completedLessonIds.filter(id => id !== lessonId);
@@ -85,36 +212,28 @@ export function toggleLessonCompletion(courseId: string, lessonId: string): bool
   return !isCompleted;
 }
 
-export function saveLessonNote(courseId: string, lessonId: string, noteText: string): void {
-  const progress = getStoredProgress(courseId);
+export function saveLessonNote(courseId: string, lessonId: string, noteText: string, userId: string = 'default'): void {
+  const progress = getStoredProgress(courseId, userId);
   progress.notes[lessonId] = noteText;
   saveProgress(progress);
 }
 
-export function addLessonComment(courseId: string, comment: LessonComment): void {
-  const progress = getStoredProgress(courseId);
+export function addLessonComment(courseId: string, comment: LessonComment, userId: string = 'default'): void {
+  const progress = getStoredProgress(courseId, userId);
   progress.comments.push(comment);
   saveProgress(progress);
 }
 
-// User mode (Student / Creator)
-export function getUserRole(): 'student' | 'creator' {
-  const role = localStorage.getItem(USER_ROLE_KEY);
-  return role === 'creator' ? 'creator' : 'student';
-}
-
-export function setUserRole(role: 'student' | 'creator'): void {
-  localStorage.setItem(USER_ROLE_KEY, role);
-}
-
-// Reset data to defaults
-export function resetToDefaults(): void {
-  localStorage.removeItem(COURSES_STORAGE_KEY);
-  // Clear all progress keys
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key && key.startsWith(PROGRESS_STORAGE_KEY)) {
-      localStorage.removeItem(key);
-    }
-  }
+export function saveQuizAnswer(
+  courseId: string,
+  lessonId: string,
+  questionId: string,
+  optionIndex: number,
+  userId: string = 'default'
+): void {
+  const progress = getStoredProgress(courseId, userId);
+  if (!progress.quizAnswers) progress.quizAnswers = {};
+  if (!progress.quizAnswers[lessonId]) progress.quizAnswers[lessonId] = {};
+  progress.quizAnswers[lessonId][questionId] = optionIndex;
+  saveProgress(progress);
 }

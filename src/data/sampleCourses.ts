@@ -1,48 +1,32 @@
-import type { Course, JupyterNotebook } from '../types';
+import type { Course, JupyterNotebook, Student } from '../types';
 
-// Realistic SVG charts encoded as data URLs for notebook output visualizations
-const scatterPlotSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 300" width="100%" height="260">
-  <rect width="100%" height="100%" fill="#ffffff" rx="8"/>
-  <!-- Grid -->
-  <line x1="50" y1="20" x2="50" y2="250" stroke="#e5e7eb" stroke-width="1.5"/>
-  <line x1="50" y1="250" x2="480" y2="250" stroke="#e5e7eb" stroke-width="1.5"/>
-  <line x1="50" y1="190" x2="480" y2="190" stroke="#f3f4f6" stroke-width="1" stroke-dasharray="4"/>
-  <line x1="50" y1="130" x2="480" y2="130" stroke="#f3f4f6" stroke-width="1" stroke-dasharray="4"/>
-  <line x1="50" y1="70" x2="480" y2="70" stroke="#f3f4f6" stroke-width="1" stroke-dasharray="4"/>
-  <!-- Axis labels -->
-  <text x="260" y="285" fill="#6b7280" font-family="sans-serif" font-size="12" text-anchor="middle">Horas de Estudio (X)</text>
-  <text x="20" y="140" fill="#6b7280" font-family="sans-serif" font-size="12" transform="rotate(-90 20 140)" text-anchor="middle">Calificación Examen (Y)</text>
-  <!-- Regression line -->
-  <line x1="60" y1="230" x2="460" y2="45" stroke="#724ae8" stroke-width="3" stroke-linecap="round"/>
-  <!-- Data points -->
-  <circle cx="75" cy="225" r="5" fill="#281434" opacity="0.8"/>
-  <circle cx="110" cy="210" r="5" fill="#281434" opacity="0.8"/>
-  <circle cx="140" cy="185" r="5" fill="#281434" opacity="0.8"/>
-  <circle cx="170" cy="195" r="5" fill="#281434" opacity="0.8"/>
-  <circle cx="210" cy="155" r="5" fill="#281434" opacity="0.8"/>
-  <circle cx="245" cy="135" r="5" fill="#281434" opacity="0.8"/>
-  <circle cx="280" cy="140" r="5" fill="#281434" opacity="0.8"/>
-  <circle cx="320" cy="110" r="5" fill="#281434" opacity="0.8"/>
-  <circle cx="360" cy="95" r="5" fill="#281434" opacity="0.8"/>
-  <circle cx="400" cy="65" r="5" fill="#281434" opacity="0.8"/>
-  <circle cx="440" cy="50" r="5" fill="#281434" opacity="0.8"/>
-  <!-- Title & Legend -->
-  <text x="260" y="25" fill="#111827" font-family="sans-serif" font-size="14" font-weight="600" text-anchor="middle">Ajuste de Regresión Lineal (R² = 0.942)</text>
-</svg>`;
-
-const lossCurveSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 280" width="100%" height="240">
-  <rect width="100%" height="100%" fill="#ffffff" rx="8"/>
-  <line x1="50" y1="30" x2="50" y2="230" stroke="#e5e7eb" stroke-width="1.5"/>
-  <line x1="50" y1="230" x2="470" y2="230" stroke="#e5e7eb" stroke-width="1.5"/>
-  <!-- Loss path -->
-  <path d="M 50 45 Q 120 180 200 205 T 350 215 T 470 218" fill="none" stroke="#e11d48" stroke-width="3"/>
-  <text x="260" y="265" fill="#6b7280" font-family="sans-serif" font-size="12" text-anchor="middle">Épocas de Entrenamiento</text>
-  <text x="20" y="130" fill="#6b7280" font-family="sans-serif" font-size="12" transform="rotate(-90 20 130)" text-anchor="middle">Función de Pérdida (MSE)</text>
-  <text x="260" y="25" fill="#111827" font-family="sans-serif" font-size="14" font-weight="600" text-anchor="middle">Convergencia del Descenso de Gradiente</text>
-  <!-- Legend -->
-  <circle cx="370" cy="50" r="4" fill="#e11d48"/>
-  <text x="382" y="54" fill="#4b5563" font-family="sans-serif" font-size="11">Loss: 0.0034</text>
-</svg>`;
+// Sample Default Students for the Teacher Portal
+export const defaultStudents: Student[] = [
+  {
+    id: 'stud-1',
+    name: 'Elena García López',
+    email: 'elena@ejemplo.com',
+    enrolledCourseIds: ['course-python-ml', 'course-cloudflare-fullstack'],
+    status: 'active',
+    createdAt: '2026-03-01T10:00:00Z',
+  },
+  {
+    id: 'stud-2',
+    name: 'Carlos Ruiz Mendoza',
+    email: 'alumno@ejemplo.com',
+    enrolledCourseIds: ['course-python-ml'],
+    status: 'active',
+    createdAt: '2026-03-05T14:20:00Z',
+  },
+  {
+    id: 'stud-3',
+    name: 'Sofia Chen Valdés',
+    email: 'sofia@ejemplo.com',
+    enrolledCourseIds: ['course-cloudflare-fullstack'],
+    status: 'active',
+    createdAt: '2026-03-12T09:15:00Z',
+  },
+];
 
 // Notebook 1: Introducción a Python & Variables
 export const notebookIntroPython: JupyterNotebook = {
@@ -51,11 +35,11 @@ export const notebookIntroPython: JupyterNotebook = {
       id: 'cell-md-1',
       cell_type: 'markdown',
       source: [
-        '# 🐍 Lección 1: Fundamentos de Python y Notebooks Interactivos\n',
-        '¡Bienvenido al curso interactivo! En esta lección aprenderás los conceptos esenciales de Python que utilizaremos a lo largo de todo el programa.\n\n',
-        '### ¿Qué es un Jupyter Notebook?\n',
-        'Un notebook combina texto enriquecido (Markdown), bloques de código ejecutable y resultados visuales (gráficos, tablas y streams de datos).\n\n',
-        '> **Objetivo de la lección:** Comprender tipos de datos dinámicos, list comprehensions y funciones con type hinting.',
+        '# 🐍 Lección Práctica: Fundamentos de Python y Notebooks\n',
+        '¡Bienvenido al aula! En esta lección aprenderás los conceptos esenciales de Python que utilizaremos a lo largo de todo el programa.\n\n',
+        '### ¿Qué es este entorno de código?\n',
+        'Este módulo combina texto explicativo, bloques de código interactivo y resultados visuales.\n\n',
+        '> **Objetivo:** Comprender tipos de datos dinámicos, list comprehensions y ejecución en vivo.',
       ],
       metadata: {},
     },
@@ -84,191 +68,20 @@ export const notebookIntroPython: JupyterNotebook = {
       metadata: {},
     },
     {
-      id: 'cell-md-2',
-      cell_type: 'markdown',
-      source: [
-        '### ⚡ List Comprehensions y Filtrado de Datos\n',
-        'Las comprensiones de listas son una de las herramientas más elegantes y rápidas de Python para transformar colecciones.',
-      ],
-      metadata: {},
-    },
-    {
       id: 'cell-code-2',
       cell_type: 'code',
       execution_count: 2,
       source: [
         '# Transformación de datos usando List Comprehensions\n',
-        'calificaciones_brutas = [65, 88, 92, 45, 78, 96, 54, 89]\n',
-        '\n',
-        '# Filtrar aprobados (>= 70) y normalizar a escala 0 a 1\n',
-        'aprobados_normalizados = [round(c / 100, 2) for c in calificaciones_brutas if c >= 70]\n',
-        '\n',
-        'print("Original:", calificaciones_brutas)\n',
-        'print("Aprobados (0 a 1):", aprobados_normalizados)\n',
-        'print("Tasa de aprobación:", f"{len(aprobados_normalizados) / len(calificaciones_brutas) * 100:.1f}%")',
+        'calificaciones = [65, 88, 92, 45, 78, 96, 54, 89]\n',
+        'aprobados = [round(c / 100, 2) for c in calificaciones if c >= 70]\n',
+        'print("Calificaciones aprobadas normalizadas (0 a 1):", aprobados)\n',
       ],
       outputs: [
         {
           output_type: 'stream',
           name: 'stdout',
-          text: [
-            'Original: [65, 88, 92, 45, 78, 96, 54, 89]\n',
-            'Aprobados (0 a 1): [0.88, 0.92, 0.78, 0.96, 0.89]\n',
-            'Tasa de aprobación: 62.5%\n',
-          ],
-        },
-      ],
-      metadata: {},
-    },
-    {
-      id: 'cell-md-3',
-      cell_type: 'markdown',
-      source: [
-        '### 🚀 Ejercicio interactivo\n',
-        'Puedes editar el código del recuadro siguiente y presionar el botón **"Ejecutar código"** para correrlo en tiempo real gracias al motor WebAssembly en tu navegador.',
-      ],
-      metadata: {},
-    },
-    {
-      id: 'cell-code-3',
-      cell_type: 'code',
-      execution_count: 3,
-      source: [
-        'def calcular_metricas(valores):\n',
-        '    promedio = sum(valores) / len(valores)\n',
-        '    maximo = max(valores)\n',
-        '    minimo = min(valores)\n',
-        '    return {"promedio": round(promedio, 2), "max": maximo, "min": minimo}\n',
-        '\n',
-        'datos = [12, 45, 78, 92, 33, 67, 85]\n',
-        'resultado = calcular_metricas(datos)\n',
-        'print("Métricas calculadas:", resultado)',
-      ],
-      outputs: [
-        {
-          output_type: 'stream',
-          name: 'stdout',
-          text: ["Métricas calculadas: {'promedio': 58.86, 'max': 92, 'min': 12}\n"],
-        },
-      ],
-      metadata: {},
-    },
-  ],
-  metadata: {
-    kernelspec: {
-      display_name: 'Python 3 (ipykernel)',
-      language: 'python',
-      name: 'python3',
-    },
-    language_info: {
-      name: 'python',
-      version: '3.11.0',
-    },
-  },
-  nbformat: 4,
-  nbformat_minor: 5,
-};
-
-// Notebook 2: Pandas DataFrames & HTML Tables
-export const notebookPandasAnalysis: JupyterNotebook = {
-  cells: [
-    {
-      id: 'cell-pd-1',
-      cell_type: 'markdown',
-      source: [
-        '# 🐼 Análisis de Datos con Pandas & DataFrames\n',
-        'Pandas es la biblioteca estándar de la industria para manipulación tabular de datos.\n',
-        'En este notebook exploramos la carga, transformación y resumen estadístico de un dataset de estudiantes.',
-      ],
-      metadata: {},
-    },
-    {
-      id: 'cell-pd-code-1',
-      cell_type: 'code',
-      execution_count: 1,
-      source: [
-        'import pandas as pd\n',
-        'import numpy as np\n',
-        '\n',
-        '# Creando DataFrame representativo\n',
-        'data = {\n',
-        '    "Estudiante": ["Carlos Ruiz", "Sofia Chen", "Mateo Silva", "Lucia Vega", "Andrés Gómez"],\n',
-        '    "Curso": ["Data Science", "Cloud Native", "Data Science", "Machine Learning", "Cloud Native"],\n',
-        '    "Horas_Estudio": [24.5, 38.0, 15.2, 42.1, 29.8],\n',
-        '    "Nota_Final": [88, 95, 74, 98, 86],\n',
-        '    "Certificado": [True, True, False, True, True]\n',
-        '}\n',
-        'df = pd.DataFrame(data)\n',
-        'df.head()',
-      ],
-      outputs: [
-        {
-          output_type: 'execute_result',
-          execution_count: 1,
-          data: {
-            'text/plain': [
-              '     Estudiante             Curso  Horas_Estudio  Nota_Final  Certificado\n',
-              '0   Carlos Ruiz      Data Science           24.5          88         True\n',
-              '1    Sofia Chen      Cloud Native           38.0          95         True\n',
-              '2   Mateo Silva      Data Science           15.2          74        False\n',
-              '3    Lucia Vega  Machine Learning           42.1          98         True\n',
-              '4  Andrés Gómez      Cloud Native           29.8          86         True\n',
-            ],
-            'text/html': [
-              `<table class="dataframe border-collapse w-full text-sm text-left my-3 shadow-sm rounded-lg overflow-hidden border border-gray-200">
-                <thead class="bg-purple-50 text-purple-950 font-semibold border-b border-purple-100">
-                  <tr>
-                    <th class="p-2.5">#</th>
-                    <th class="p-2.5">Estudiante</th>
-                    <th class="p-2.5">Curso</th>
-                    <th class="p-2.5">Horas_Estudio</th>
-                    <th class="p-2.5">Nota_Final</th>
-                    <th class="p-2.5">Certificado</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-100 bg-white">
-                  <tr class="hover:bg-purple-50/40"><td class="p-2.5 font-mono text-gray-500">0</td><td class="p-2.5 font-medium text-gray-900">Carlos Ruiz</td><td class="p-2.5">Data Science</td><td class="p-2.5">24.5</td><td class="p-2.5 font-semibold text-emerald-600">88</td><td class="p-2.5"><span class="px-2 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-800">Sí</span></td></tr>
-                  <tr class="hover:bg-purple-50/40"><td class="p-2.5 font-mono text-gray-500">1</td><td class="p-2.5 font-medium text-gray-900">Sofia Chen</td><td class="p-2.5">Cloud Native</td><td class="p-2.5">38.0</td><td class="p-2.5 font-semibold text-emerald-600">95</td><td class="p-2.5"><span class="px-2 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-800">Sí</span></td></tr>
-                  <tr class="hover:bg-purple-50/40"><td class="p-2.5 font-mono text-gray-500">2</td><td class="p-2.5 font-medium text-gray-900">Mateo Silva</td><td class="p-2.5">Data Science</td><td class="p-2.5">15.2</td><td class="p-2.5 font-semibold text-amber-600">74</td><td class="p-2.5"><span class="px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700">No</span></td></tr>
-                  <tr class="hover:bg-purple-50/40"><td class="p-2.5 font-mono text-gray-500">3</td><td class="p-2.5 font-medium text-gray-900">Lucia Vega</td><td class="p-2.5">Machine Learning</td><td class="p-2.5">42.1</td><td class="p-2.5 font-semibold text-emerald-600">98</td><td class="p-2.5"><span class="px-2 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-800">Sí</span></td></tr>
-                  <tr class="hover:bg-purple-50/40"><td class="p-2.5 font-mono text-gray-500">4</td><td class="p-2.5 font-medium text-gray-900">Andrés Gómez</td><td class="p-2.5">Cloud Native</td><td class="p-2.5">29.8</td><td class="p-2.5 font-semibold text-emerald-600">86</td><td class="p-2.5"><span class="px-2 py-0.5 rounded-full text-xs bg-emerald-100 text-emerald-800">Sí</span></td></tr>
-                </tbody>
-              </table>`,
-            ],
-          },
-        },
-      ],
-      metadata: {},
-    },
-    {
-      id: 'cell-pd-2',
-      cell_type: 'markdown',
-      source: [
-        '### 📊 Agrupaciones y Estadísticas Descriptivas\n',
-        'Podemos usar `.groupby()` para encontrar el rendimiento por categoría de curso:',
-      ],
-      metadata: {},
-    },
-    {
-      id: 'cell-pd-code-2',
-      cell_type: 'code',
-      execution_count: 2,
-      source: [
-        '# Resumen agrupado por curso\n',
-        'resumen = df.groupby("Curso")[["Horas_Estudio", "Nota_Final"]].mean().round(1)\n',
-        'print(resumen)',
-      ],
-      outputs: [
-        {
-          output_type: 'stream',
-          name: 'stdout',
-          text: [
-            '                  Horas_Estudio  Nota_Final\n',
-            'Curso                                      \n',
-            'Cloud Native               33.9        90.5\n',
-            'Data Science               19.8        81.0\n',
-            'Machine Learning           42.1        98.0\n',
-          ],
+          text: ['Calificaciones aprobadas normalizadas (0 a 1): [0.88, 0.92, 0.78, 0.96, 0.89]\n'],
         },
       ],
       metadata: {},
@@ -285,258 +98,146 @@ export const notebookPandasAnalysis: JupyterNotebook = {
   nbformat_minor: 5,
 };
 
-// Notebook 3: Machine Learning & Regresión
-export const notebookMachineLearning: JupyterNotebook = {
-  cells: [
-    {
-      id: 'cell-ml-1',
-      cell_type: 'markdown',
-      source: [
-        '# 🤖 Machine Learning: Regresión Lineal y Descenso de Gradiente\n',
-        'La regresión lineal modela la relación entre una variable dependiente $Y$ y una o más variables independientes $X$.\n\n',
-        '### Ecuación de la hipótesis:\n',
-        '$$\\hat{y} = w \\cdot x + b$$\n\n',
-        'Donde:\n',
-        '- $w$ es el peso (pendiente / weight)\n',
-        '- $b$ es el sesgo (bias / intercepto)\n',
-        '- Calculamos la pérdida usando el Error Cuadrático Medio (MSE): $\\mathcal{L} = \\frac{1}{N} \\sum (y - \\hat{y})^2$',
-      ],
-      metadata: {},
-    },
-    {
-      id: 'cell-ml-code-1',
-      cell_type: 'code',
-      execution_count: 1,
-      source: [
-        'import numpy as np\n',
-        'import matplotlib.pyplot as plt\n',
-        '\n',
-        '# Generamos datos sintéticos con correlación positiva\n',
-        'np.random.seed(42)\n',
-        'X = np.linspace(2, 10, 11)\n',
-        'y = 10 * X + 15 + np.random.normal(0, 3, size=len(X))\n',
-        '\n',
-        '# Ajuste analítico de mínimos cuadrados\n',
-        'w, b = np.polyfit(X, y, 1)\n',
-        'print(f"Modelo entrenado: y = {w:.2f} * x + {b:.2f}")',
-      ],
-      outputs: [
-        {
-          output_type: 'stream',
-          name: 'stdout',
-          text: ['Modelo entrenado: y = 9.87 * x + 15.62\n'],
-        },
-      ],
-      metadata: {},
-    },
-    {
-      id: 'cell-ml-code-2',
-      cell_type: 'code',
-      execution_count: 2,
-      source: [
-        '# Graficar la recta de ajuste contra los puntos experimentales\n',
-        'plt.figure(figsize=(8, 4.5))\n',
-        'plt.scatter(X, y, color="#281434", label="Datos reales")\n',
-        'plt.plot(X, w*X + b, color="#724ae8", linewidth=2.5, label="Regresión ajustada")\n',
-        'plt.title("Ajuste de Regresión Lineal")\n',
-        'plt.xlabel("Horas de estudio")\n',
-        'plt.ylabel("Nota obtenida")\n',
-        'plt.grid(True, alpha=0.3)\n',
-        'plt.show()',
-      ],
-      outputs: [
-        {
-          output_type: 'display_data',
-          data: {
-            'image/svg+xml': scatterPlotSvg,
-          },
-        },
-      ],
-      metadata: {},
-    },
-    {
-      id: 'cell-ml-md-2',
-      cell_type: 'markdown',
-      source: [
-        '### 📉 Convergencia de la Pérdida (Loss Function)\n',
-        'A medida que el algoritmo itera a través de las épocas, la penalización se reduce exponencialmente hasta estabilizarse en el mínimo local.',
-      ],
-      metadata: {},
-    },
-    {
-      id: 'cell-ml-code-3',
-      cell_type: 'code',
-      execution_count: 3,
-      source: [
-        '# Visualización de la curva de pérdida durante 100 épocas\n',
-        'epocas = np.arange(1, 101)\n',
-        'loss = np.exp(-epocas / 18) + 0.0034\n',
-        'print(f"Pérdida final en época 100: {loss[-1]:.4f}")',
-      ],
-      outputs: [
-        {
-          output_type: 'stream',
-          name: 'stdout',
-          text: ['Pérdida final en época 100: 0.0034\n'],
-        },
-        {
-          output_type: 'display_data',
-          data: {
-            'image/svg+xml': lossCurveSvg,
-          },
-        },
-      ],
-      metadata: {},
-    },
-  ],
-  metadata: {
-    kernelspec: {
-      display_name: 'Python 3',
-      language: 'python',
-      name: 'python3',
-    },
-  },
-  nbformat: 4,
-  nbformat_minor: 5,
-};
-
-// Initial Seed Courses
+// Default Courses with all Module Types: Video, Audio, Photo, Text, Code/Notebook, Quiz
 export const defaultCourses: Course[] = [
   {
     id: 'course-python-ml',
-    title: 'Dominando Python, Data Science y Machine Learning',
+    title: 'Python, Inteligencia Artificial y Machine Learning',
     slug: 'python-data-science-machine-learning',
-    tagline: 'Aprende programación moderna, análisis de datos con Pandas y modelos de IA usando Jupyter Notebooks interactivos.',
-    description: 'Un curso práctico diseñado con la estética limpia de Podia para que aprendas haciendo. Cada lección incluye notebooks interactivos (.ipynb) que puedes correr directamente en tu navegador sin instalar nada, o descargar a tu ordenador.',
-    badge: 'Curso Más Popular',
+    tagline: 'Aprende programación moderna, modelos de IA y análisis práctico con notebooks interactivos, vídeo y ejercicios.',
+    description: 'Un curso completo organizado por módulos multimedia: vídeo explicativo, guías de estudio, lecciones interactivas de código Python ejecutable en navegador, podcast de audio y cuestionarios con corrección instantánea.',
+    badge: 'Curso Principal',
     themeColor: '#724ae8',
-    price: 'Gratis',
+    price: 'Acceso Privado',
     isPublished: true,
     createdAt: '2026-01-15T10:00:00Z',
     updatedAt: '2026-03-20T14:30:00Z',
     instructor: {
-      name: 'David Rodriguez',
-      title: 'Senior AI Engineer & Cloud Architect',
+      name: 'Prof. David Rodriguez',
+      title: 'Director de Ingeniería y Formador de IA',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80',
-      bio: 'Ingeniero de software especializado en arquitecturas serverless en Cloudflare, Inteligencia Artificial aplicada y educación tecnológica para creadores.',
+      bio: 'Especialista en arquitecturas serverless en la nube, Inteligencia Artificial aplicada y docencia tecnológica.',
     },
     features: [
-      'Compatibilidad nativa con archivos de Jupyter Notebook (.ipynb)',
-      'Ejecución de código Python en el navegador con WebAssembly (Pyodide)',
-      'Alojamiento 100% gratuito en Cloudflare Pages con CDN global',
-      'Diseño elegante y minimalista inspirado en Podia',
-      'Descarga de notebooks y recursos de cada clase con un clic',
-      'Seguimiento automático del progreso del estudiante y notas privadas',
+      'Acceso privado y seguro exclusivo para alumnos registrados',
+      'Módulos de Vídeo, Podcast de Audio, Infografías y Artículos',
+      'Ejecución en vivo de código Python y Jupyter Notebooks (.ipynb)',
+      'Cuestionarios tipo test (Quizzes) con retroalimentación automática',
+      'Panel de profesor con control de alumnos y seguimiento de avances',
     ],
     faq: [
       {
-        question: '¿Realmente se puede alojar 100% gratis en Cloudflare?',
-        answer: 'Sí. Cloudflare Pages ofrece un nivel gratuito perpetuo con ancho de banda ilimitado, certificado SSL gratis, 500 compilaciones al mes y distribución en más de 300 ciudades del mundo. Además, Cloudflare D1 ofrece hasta 5 millones de lecturas diarias y 5GB de almacenamiento SQLite completamente gratis.',
+        question: '¿Cómo acceden los alumnos a sus clases?',
+        answer: 'El profesor añade a los alumnos desde el Panel de Administración ingresando su correo electrónico. Los alumnos inician sesión ingresando su correo registrado para ver sus cursos autorizados.',
       },
       {
-        question: '¿Cómo funcionan los archivos de Jupyter Notebook (.ipynb)?',
-        answer: 'Nuestra plataforma parsea directamente los archivos estándar .ipynb generados por JupyterLab, Google Colab o VS Code. Renderiza celdas de Markdown, bloques de código coloreados y resultados complejos como tablas HTML (Pandas) e imágenes vectoriales (Matplotlib). También puedes subir tus propios notebooks desde el panel de creador.',
-      },
-      {
-        question: '¿Puedo ejecutar código Python sin tener Python instalado?',
-        answer: '¡Sí! Integramos Pyodide (Python compilado a WebAssembly). Al pulsar "Ejecutar código", el script corre dentro de la memoria de tu navegador de manera instantánea y segura.',
+        question: '¿Qué módulos multimedia soporta el creador de cursos?',
+        answer: 'Permite crear lecciones de Vídeo (YouTube, Vimeo, MP4), Infografía / Foto, Texto enriquecido, Cuadernos de Código interactivo (.ipynb), Podcast de Audio y Cuestionarios interactivos.',
       },
     ],
     sections: [
       {
         id: 'sec-1',
-        title: 'Módulo 1: Fundamentos y Sintaxis Python Moderna',
-        description: 'Bases de la programación en Python y estructura de notebooks.',
+        title: 'Módulo 1: Fundamentos y Bienvenida Multimedia',
+        description: 'Introducción conceptual mediante vídeo, infografía y lectura.',
         lessons: [
           {
-            id: 'les-1',
-            title: '1. Introducción a Python y Jupyter Notebooks',
-            slug: 'intro-python-jupyter-notebooks',
-            type: 'notebook',
-            durationMinutes: 15,
-            summary: 'Aprende los conceptos fundamentales de Python, tipos de variables y list comprehensions con ejecución interactiva.',
-            notebookData: notebookIntroPython,
-            notebookFileName: '01_intro_python.ipynb',
-            resources: [
-              { name: '01_intro_python.ipynb', url: '#', size: '12 KB' },
-              { name: 'Guia_Atajos_Jupyter.pdf', url: '#', size: '1.2 MB' },
-            ],
+            id: 'les-vid-1',
+            title: '1. Vídeo: Bienvenida y Hoja de Ruta del Curso',
+            slug: 'video-bienvenida-hoja-de-ruta',
+            type: 'video',
+            durationMinutes: 8,
+            summary: 'Conoce los objetivos de aprendizaje, la metodología y las herramientas que usaremos.',
+            videoUrl: 'https://www.youtube.com/watch?v=kqtD5dpn9C8',
+            contentMarkdown: `### 📌 Puntos Clave de este Vídeo:
+- Presentación del entorno de trabajo
+- Cómo sacar el máximo partido a cada módulo multimedia
+- Recomendación de dedicar 25 minutos al día a la práctica de código.`,
           },
           {
-            id: 'les-2',
-            title: '2. Buenas prácticas y Tipado estático en Python',
-            slug: 'buenas-practicas-tipado',
-            type: 'article',
-            durationMinutes: 10,
-            summary: 'Escribe código limpio, mantenible y legible con Type Hints y dataclasses.',
-            contentMarkdown: `# 🎯 Buenas Prácticas y Tipado Estático en Python Moderno
-
-Escribir código legible y robusto es indispensable cuando construyes aplicaciones en producción o pipelines de ciencia de datos.
-
-### 1. Usa Type Hints siempre que sea posible
-Desde Python 3.5+, las sugerencias de tipos mejoran la documentación viva de tu código y evitan errores sutiles:
-
-\`\`\`python
-def procesar_calificacion(nombre: str, puntuacion: float) -> str:
-    if puntuacion >= 90:
-        return f"{nombre} ha obtenido calificación de Honor"
-    elif puntuacion >= 70:
-        return f"{nombre} ha aprobado satisfactoriamente"
-    return f"{nombre} debe presentar recuperación"
-\`\`\`
-
-### 2. Estructuras de datos con dataclasses
-En lugar de diccionarios planos o clases con constructores verbosos, utiliza \`@dataclass\`:
-
-\`\`\`python
-from dataclasses import dataclass
-
-@dataclass
-class Alumno:
-    id: int
-    nombre: str
-    email: str
-    cursos_inscritos: list[str]
-
-    def total_cursos(self) -> int:
-        return len(self.cursos_inscritos)
-\`\`\`
-
-> 💡 **Consejo Podia:** Mantén tus lecciones concisas y enfocadas en un solo concepto a la vez para maximizar la retención de los estudiantes.
-`,
+            id: 'les-img-1',
+            title: '2. Infografía: Arquitectura del Ecosistema de Datos',
+            slug: 'infografia-ecosistema-datos',
+            type: 'image',
+            durationMinutes: 5,
+            summary: 'Diagrama visual de las capas de un proyecto de Inteligencia Artificial.',
+            imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
+            imageCaption: 'Flujo de datos: Adquisición -> Limpieza con Pandas -> Modelado -> Despliegue en la Nube.',
+            contentMarkdown: `Analiza detenidamente la infografía antes de comenzar los ejercicios prácticos de código. Cada componente representa una etapa indispensable en el pipeline moderno.`,
+          },
+          {
+            id: 'les-aud-1',
+            title: '3. Audio: Podcast - Hábitos de un Programador de IA',
+            slug: 'podcast-habitos-programador-ia',
+            type: 'audio',
+            durationMinutes: 12,
+            summary: 'Episodio de audio para escuchar mientras repasas tus notas.',
+            audioTitle: 'Episodio 1: Mentalidad de Resolución de Problemas y Debugging',
+            audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+            contentMarkdown: `> 🎧 **Notas del Episodio:**
+- La importancia de leer mensajes de error sin frustración
+- Descomposición de algoritmos complejos en funciones de menos de 20 líneas
+- Práctica deliberada con datasets reales.`,
           },
         ],
       },
       {
         id: 'sec-2',
-        title: 'Módulo 2: Manipulación y Visualización de Datos',
-        description: 'Aprende a transformar tablas de datos y crear gráficos visuales atractivos.',
+        title: 'Módulo 2: Práctica de Código y Evaluación',
+        description: 'Laboratorio de código interactivo y cuestionario.',
         lessons: [
           {
-            id: 'les-3',
-            title: '3. DataFrames con Pandas y Tablas Interactivas',
-            slug: 'pandas-dataframes-analisis',
+            id: 'les-code-1',
+            title: '4. Código: Fundamentos de Python en Vivo',
+            slug: 'codigo-fundamentos-python',
             type: 'notebook',
             durationMinutes: 20,
-            summary: 'Filtrado, agregación de columnas, limpieza y presentación de datos tabulares con Pandas.',
-            notebookData: notebookPandasAnalysis,
-            notebookFileName: '02_pandas_dataframes.ipynb',
+            summary: 'Ejecuta y modifica código directamente en tu navegador con WebAssembly.',
+            notebookData: notebookIntroPython,
+            notebookFileName: 'fundamentos_python.ipynb',
             resources: [
-              { name: '02_pandas_dataframes.ipynb', url: '#', size: '18 KB' },
-              { name: 'dataset_estudiantes.csv', url: '#', size: '4.5 KB' },
+              { name: 'fundamentos_python.ipynb', url: '#', size: '14 KB' },
             ],
           },
           {
-            id: 'les-4',
-            title: '4. Regresión Lineal y Gráficos de Aprendizaje',
-            slug: 'machine-learning-regresion-lineal',
-            type: 'notebook',
-            durationMinutes: 25,
-            summary: 'Implementación del algoritmo de regresión lineal, minimización de error cuadrático medio y visualización con Matplotlib.',
-            notebookData: notebookMachineLearning,
-            notebookFileName: '03_machine_learning_regresion.ipynb',
-            resources: [
-              { name: '03_machine_learning_regresion.ipynb', url: '#', size: '24 KB' },
+            id: 'les-quiz-1',
+            title: '5. Cuestionario de Evaluación: Módulo 1 y 2',
+            slug: 'cuestionario-evaluacion-conceptos',
+            type: 'quiz',
+            durationMinutes: 10,
+            summary: 'Evalúa tus conocimientos adquiridos con retroalimentación inmediata.',
+            quizQuestions: [
+              {
+                id: 'q1',
+                question: '¿Qué estructura de datos de Python mantiene elementos únicos sin duplicados?',
+                options: ['list', 'tuple', 'set', 'dict'],
+                correctIndex: 2,
+                explanation: 'Los conjuntos (sets) en Python no admiten duplicados y tienen búsquedas de tiempo O(1).',
+              },
+              {
+                id: 'q2',
+                question: '¿Qué ventaja tiene ejecutar código mediante WebAssembly en el navegador?',
+                options: [
+                  'No requiere servidores backend costosos y el cómputo se realiza en el cliente',
+                  'Requiere instalar Docker en la máquina del alumno',
+                  'Solo funciona en ordenadores con GPU dedicada',
+                  'Es un servicio de pago obligatorio',
+                ],
+                correctIndex: 0,
+                explanation: 'WebAssembly corre directamente en la máquina del usuario, permitiendo alojar el LMS en la capa gratuita de Cloudflare sin costes de servidor.',
+              },
+              {
+                id: 'q3',
+                question: '¿Cuál es la función principal de una List Comprehension en Python?',
+                options: [
+                  'Crear bucles infinitos controlados',
+                  'Transformar y filtrar listas de manera concisa y elegante',
+                  'Conectar a una base de datos SQL remota',
+                  'Generar gráficos vectoriales',
+                ],
+                correctIndex: 1,
+                explanation: 'Las list comprehensions proporcionan una sintaxis compacta para crear nuevas listas a partir de iterables existentes.',
+              },
             ],
           },
         ],
@@ -545,100 +246,54 @@ class Alumno:
   },
   {
     id: 'course-cloudflare-fullstack',
-    title: 'Arquitectura Serverless 100% Gratis en Cloudflare',
-    slug: 'arquitectura-serverless-gratis-cloudflare',
-    tagline: 'Aprende a desplegar LMS, APIs, Bases de Datos D1 y almacenamiento R2 con coste cero para siempre.',
-    description: 'Guía paso a paso para arquitectos y creadores que quieren lanzar plataformas web globales sin pagar facturas de hosting ni infraestructura.',
-    badge: 'Nuevo',
+    title: 'Arquitectura Cloud Serverless y Automatización',
+    slug: 'arquitectura-cloud-serverless',
+    tagline: 'Domina Cloudflare Pages, Workers, bases de datos D1 y despliegues globales a coste cero.',
+    description: 'Curso práctico para desarrolladores y creadores que desean construir plataformas web modernas sin pagar facturas mensuales de servidores.',
+    badge: 'Avanzado',
     themeColor: '#f97316',
-    price: 'Gratis',
+    price: 'Acceso Privado',
     isPublished: true,
     createdAt: '2026-02-10T11:00:00Z',
     updatedAt: '2026-03-22T09:15:00Z',
     instructor: {
-      name: 'David Rodriguez',
-      title: 'Senior AI Engineer & Cloud Architect',
+      name: 'Prof. David Rodriguez',
+      title: 'Director de Ingeniería y Formador de IA',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80',
-      bio: 'Especialista en desarrollo cloud-native con Cloudflare Workers, Pages, D1 y modelos de lenguaje locales.',
+      bio: 'Especialista en desarrollo cloud-native y optimización de costes de infraestructura.',
     },
     features: [
-      'Cloudflare Pages: Alojamiento estático gratuito con SSL y dominios personalizados',
-      'Cloudflare D1: Base de datos SQL serverless con 5 millones de lecturas diarias gratis',
-      'Cloudflare R2: Almacenamiento de objetos S3 sin costes de salida de datos',
-      'Despliegues automáticos desde repositorios de GitHub con Git push',
+      'Configuración de Cloudflare Pages, D1 SQL y Workers',
+      'Despliegue continuo con Git y Wrangler CLI',
+      'Autenticación y control de acceso privado',
     ],
-    faq: [
-      {
-        question: '¿Por qué Cloudflare ofrece estos servicios gratis?',
-        answer: 'Cloudflare utiliza su red global existente para procesar tráfico en el borde (edge network). El tier gratuito está pensado para desarrolladores y proyectos pequeños/medianos, con generosos límites que superan con creces a la competencia.',
-      },
-    ],
+    faq: [],
     sections: [
       {
         id: 'cf-sec-1',
-        title: 'Módulo 1: Despliegue de este LMS en Cloudflare Pages',
-        description: 'Cómo poner en marcha este mismo proyecto en tu propia cuenta en menos de 3 minutos.',
+        title: 'Módulo 1: Infraestructura Serverless',
+        description: 'Fundamentos de la red de borde y bases de datos distribuidas.',
         lessons: [
           {
             id: 'cf-les-1',
-            title: '1. Despliegue en 3 minutos con Wrangler CLI y GitHub',
-            slug: 'despliegue-cloudflare-pages-gratis',
+            title: '1. Despliegue en Cloudflare Pages con Wrangler',
+            slug: 'despliegue-cloudflare-wrangler',
             type: 'article',
-            durationMinutes: 12,
-            summary: 'Instrucciones exactas para clonar el repositorio, compilar y publicar en Cloudflare sin tarjeta de crédito.',
-            contentMarkdown: `# 🚀 Despliegue de tu LMS en Cloudflare Pages 100% Gratis
+            durationMinutes: 15,
+            summary: 'Guía paso a paso para publicar aplicaciones web con CDN global y SSL.',
+            contentMarkdown: `# Despliegue Global en Cloudflare Pages
 
-¡Felicidades! Este clon de LMS inspirado en Podia está listo para funcionar de manera completamente gratuita en la nube de Cloudflare.
+Aprende a publicar aplicaciones estáticas y dinámicas utilizando Wrangler CLI:
 
----
-
-### Opción A: Despliegue instantáneo con Wrangler CLI (Línea de Comandos)
-
-1. **Compila la aplicación:**
 \`\`\`bash
+# Compilar la aplicación
 npm run build
+
+# Desplegar en Cloudflare Pages
+npx wrangler pages deploy dist --project-name mi-plataforma
 \`\`\`
 
-2. **Inicia sesión en Cloudflare (gratis, si no lo has hecho):**
-\`\`\`bash
-npx wrangler login
-\`\`\`
-
-3. **Publica en Cloudflare Pages:**
-\`\`\`bash
-npx wrangler pages deploy dist --project-name mi-lms-podia
-\`\`\`
-
-¡Listo! Recibirás inmediatamente una URL pública segura como \`https://mi-lms-podia.pages.dev\` con certificado SSL activado y CDN mundial.
-
----
-
-### Opción B: Integración Continua con GitHub (Recomendado)
-
-1. Sube tu código a un repositorio en **GitHub**.
-2. Entra en el panel de **Cloudflare Dashboard** -> **Workers & Pages** -> **Create Application** -> **Pages**.
-3. Selecciona **Connect to Git** y escoge tu repositorio.
-4. Configura los parámetros de build:
-   - **Framework preset:** \`Vite\`
-   - **Build command:** \`npm run build\`
-   - **Build output directory:** \`dist\`
-5. Haz clic en **Save and Deploy**.
-
-A partir de ese momento, cada vez que hagas \`git push\`, Cloudflare actualizará tu LMS automáticamente de forma gratuita.
-
----
-
-### ¿Quieres base de datos Cloudflare D1 (SQL)?
-Para habilitar Cloudflare D1 en tu Worker/Pages Functions:
-
-\`\`\`bash
-# 1. Crear la base de datos D1 gratis
-npx wrangler d1 create lms-database
-
-# 2. Aplicar el esquema SQL incluido
-npx wrangler d1 execute lms-database --file=./schema.sql
-\`\`\`
-`,
+Todo el contenido se distribuye automáticamente en más de 300 centros de datos mundiales.`,
           },
         ],
       },

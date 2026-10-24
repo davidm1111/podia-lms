@@ -7,7 +7,9 @@ import {
   ChevronRight,
   FileCode,
   FileText,
-  PlayCircle,
+  Video,
+  Image as ImageIcon,
+  Headphones,
   HelpCircle,
   ArrowLeft,
   Sparkles,
@@ -30,7 +32,6 @@ export const CurriculumSidebar: React.FC<CurriculumSidebarProps> = ({
   onToggleComplete,
   onBackToCourse,
 }) => {
-  // All sections open by default
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(() => {
     const map: Record<string, boolean> = {};
     course.sections.forEach(s => {
@@ -43,7 +44,6 @@ export const CurriculumSidebar: React.FC<CurriculumSidebarProps> = ({
     setOpenSections(prev => ({ ...prev, [sectionId]: !prev[sectionId] }));
   };
 
-  // Calculate total lessons and completion percentage
   const allLessons = course.sections.flatMap(s => s.lessons);
   const totalLessons = allLessons.length;
   const completedCount = allLessons.filter(l => completedLessonIds.includes(l.id)).length;
@@ -51,14 +51,19 @@ export const CurriculumSidebar: React.FC<CurriculumSidebarProps> = ({
 
   const getLessonIcon = (type: Lesson['type']) => {
     switch (type) {
+      case 'video':
+        return <Video className="w-4 h-4 text-rose-500 shrink-0" />;
+      case 'image':
+        return <ImageIcon className="w-4 h-4 text-blue-500 shrink-0" />;
+      case 'audio':
+        return <Headphones className="w-4 h-4 text-amber-500 shrink-0" />;
       case 'notebook':
         return <FileCode className="w-4 h-4 text-purple-600 shrink-0" />;
-      case 'video':
-        return <PlayCircle className="w-4 h-4 text-rose-500 shrink-0" />;
+      case 'quiz':
+        return <HelpCircle className="w-4 h-4 text-indigo-500 shrink-0" />;
       case 'article':
-        return <FileText className="w-4 h-4 text-emerald-600 shrink-0" />;
       default:
-        return <HelpCircle className="w-4 h-4 text-stone-400 shrink-0" />;
+        return <FileText className="w-4 h-4 text-emerald-600 shrink-0" />;
     }
   };
 
@@ -78,7 +83,7 @@ export const CurriculumSidebar: React.FC<CurriculumSidebarProps> = ({
           {course.title}
         </h2>
 
-        {/* Podia-style Progress Bar */}
+        {/* Progress Bar */}
         <div className="mt-4 space-y-1.5">
           <div className="flex items-center justify-between text-xs">
             <span className="font-medium text-stone-600">Tu progreso</span>
@@ -114,7 +119,7 @@ export const CurriculumSidebar: React.FC<CurriculumSidebarProps> = ({
               >
                 <div className="pr-2">
                   <div className="text-[11px] font-semibold text-purple-800 uppercase tracking-wider">
-                    Sección {sIndex + 1}
+                    Módulo {sIndex + 1}
                   </div>
                   <h4 className="text-sm font-bold text-[#281434] line-clamp-1 group-hover:text-purple-900">
                     {section.title}
@@ -168,11 +173,9 @@ export const CurriculumSidebar: React.FC<CurriculumSidebarProps> = ({
                             </div>
                             <div className="flex items-center gap-2 text-[10px] text-stone-400 mt-0.5 pl-5.5">
                               <span>{lesson.durationMinutes} min</span>
-                              {lesson.type === 'notebook' && (
-                                <span className="bg-purple-100/80 text-purple-800 px-1.5 py-0.2 rounded font-mono font-medium">
-                                  .ipynb
-                                </span>
-                              )}
+                              <span className="uppercase text-[9px] font-semibold text-purple-700 bg-purple-50 px-1 rounded">
+                                {lesson.type}
+                              </span>
                             </div>
                           </div>
                         </div>

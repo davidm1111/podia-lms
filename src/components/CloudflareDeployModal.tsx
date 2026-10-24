@@ -30,8 +30,8 @@ export const CloudflareDeployModal: React.FC<CloudflareDeployModalProps> = ({ is
     },
     {
       title: '3. Despliega en Cloudflare Pages con un solo comando',
-      cmd: 'npx wrangler pages deploy dist --project-name podia-lms',
-      desc: '¡Listo! Tu LMS estará en vivo en https://podia-lms.pages.dev con SSL gratis y CDN global.',
+      cmd: 'npx wrangler pages deploy dist --project-name aura-lms',
+      desc: '¡Listo! Tu LMS estará en vivo en tu subdominio de pages.dev con SSL gratis y CDN global.',
     },
     {
       title: '4. (Opcional) Activa Base de Datos Cloudflare D1 gratis',

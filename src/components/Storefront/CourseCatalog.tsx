@@ -1,38 +1,39 @@
-import React, { useRef } from 'react';
-import type { Course } from '../../types';
+import React from 'react';
+import type { Course, AuthUser } from '../../types';
 import { getStoredProgress } from '../../lib/storage';
-import { parseNotebook } from '../../lib/notebookParser';
 import {
   FileCode,
   Sparkles,
   ArrowRight,
-  Upload,
   BookOpen,
   Cloud,
+  Users,
+  Video,
+  Headphones,
+  HelpCircle,
 } from 'lucide-react';
 
 interface CourseCatalogProps {
   courses: Course[];
+  authUser: AuthUser | null;
   onSelectCourse: (course: Course) => void;
   onOpenCoursePlayer: (course: Course) => void;
-  onOpenCreator: () => void;
+  onOpenAdmin: () => void;
   onOpenDeployModal: () => void;
-  onQuickUploadNotebook: (notebookData: any, fileName: string) => void;
 }
 
 export const CourseCatalog: React.FC<CourseCatalogProps> = ({
   courses,
+  authUser,
   onSelectCourse,
   onOpenCoursePlayer,
-  onOpenCreator,
+  onOpenAdmin,
   onOpenDeployModal,
-  onQuickUploadNotebook,
 }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const userId = authUser?.id || 'default';
 
-  // Filter in-progress courses
   const coursesWithProgress = courses.map(course => {
-    const progress = getStoredProgress(course.id);
+    const progress = getStoredProgress(course.id, userId);
     const allLessons = course.sections.flatMap(s => s.lessons);
     const completedCount = allLessons.filter(l => progress.completedLessonIds.includes(l.id)).length;
     const percent = allLessons.length > 0 ? Math.round((completedCount / allLessons.length) * 100) : 0;
@@ -46,41 +47,25 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
 
   const enrolled = coursesWithProgress.filter(c => c.completedCount > 0);
 
-  // File upload handler for fast notebook inspection
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      try {
-        const text = event.target?.result as string;
-        const parsed = parseNotebook(text);
-        onQuickUploadNotebook(parsed, file.name);
-      } catch (err: any) {
-        alert(err.message || 'Error al procesar el archivo .ipynb');
-      }
-    };
-    reader.readAsText(file);
-  };
-
   return (
     <div className="min-h-screen bg-[#faf8f5] py-10 px-4 sm:px-6 lg:px-8 text-[#2c2533]">
       <div className="max-w-6xl mx-auto space-y-12">
-        {/* Welcome Hero Banner with Podia Plum Aesthetics */}
+        {/* Welcome Banner */}
         <div className="bg-[#281434] text-white rounded-3xl p-8 sm:p-12 shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="space-y-4 max-w-xl text-center md:text-left z-10">
+          <div className="space-y-4 max-w-2xl text-center md:text-left z-10">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-400/30">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>LMS Gratuito para Cloudflare</span>
+              <span>Plataforma de Formación Privada</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-              Aprende y enseña con <span className="text-purple-300">Jupyter Notebooks</span>
+              Aprende con <span className="text-purple-300">Vídeo, Audio y Código</span>
             </h1>
 
             <p className="text-stone-300 text-sm sm:text-base leading-relaxed">
-              Plataforma LMS moderna inspirada en la estética limpia de Podia. Ejecuta código Python interactivo en tu navegador y despliega gratis en Cloudflare Pages sin costes de servidor.
+              {authUser
+                ? `Bienvenido/a, ${authUser.name}. Tienes acceso exclusivo a tus módulos formativos, laboratorios de código interactivo y cuestionarios.`
+                : 'Accede a tus cursos autorizados con tus credenciales asignadas por el profesor.'}
             </p>
 
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
@@ -88,46 +73,57 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                 onClick={() => onSelectCourse(courses[0])}
                 className="flex items-center gap-2 bg-[#724ae8] hover:bg-[#5d38cc] text-white font-bold py-3 px-6 rounded-full text-sm shadow-md transition-all active:scale-95"
               >
-                <span>Explorar Cursos</span>
+                <span>Ver Mi Plan de Estudios</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
-              <button
-                onClick={onOpenDeployModal}
-                className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-5 rounded-full text-sm backdrop-blur-xs transition-colors"
-              >
-                <Cloud className="w-4 h-4 text-orange-400" />
-                <span>Desplegar en Cloudflare $0</span>
-              </button>
+              {authUser?.role === 'admin' ? (
+                <button
+                  onClick={onOpenAdmin}
+                  className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-5 rounded-full text-sm backdrop-blur-xs transition-colors"
+                >
+                  <Users className="w-4 h-4 text-purple-300" />
+                  <span>Gestionar Alumnos</span>
+                </button>
+              ) : (
+                <button
+                  onClick={onOpenDeployModal}
+                  className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-5 rounded-full text-sm backdrop-blur-xs transition-colors"
+                >
+                  <Cloud className="w-4 h-4 text-orange-400" />
+                  <span>Cloudflare $0</span>
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Quick Upload Notebook Card */}
-          <div className="w-full md:w-84 shrink-0 bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl text-center z-10">
-            <div className="w-12 h-12 mx-auto rounded-2xl bg-purple-500/20 flex items-center justify-center text-purple-300 mb-3">
-              <Upload className="w-6 h-6" />
+          {/* Quick Learning Stats Card */}
+          <div className="w-full md:w-80 shrink-0 bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-3xl text-left z-10 space-y-4">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-purple-300 block">
+              Módulos Disponibles
+            </span>
+            <div className="grid grid-cols-2 gap-3 text-xs">
+              <div className="p-3 bg-white/10 rounded-2xl flex items-center gap-2">
+                <Video className="w-4 h-4 text-rose-400" />
+                <span>Vídeos HD</span>
+              </div>
+              <div className="p-3 bg-white/10 rounded-2xl flex items-center gap-2">
+                <FileCode className="w-4 h-4 text-purple-300" />
+                <span>Python .ipynb</span>
+              </div>
+              <div className="p-3 bg-white/10 rounded-2xl flex items-center gap-2">
+                <Headphones className="w-4 h-4 text-amber-300" />
+                <span>Podcasts</span>
+              </div>
+              <div className="p-3 bg-white/10 rounded-2xl flex items-center gap-2">
+                <HelpCircle className="w-4 h-4 text-indigo-300" />
+                <span>Quizzes</span>
+              </div>
             </div>
-            <h3 className="text-base font-bold text-white">¿Tienes un archivo .ipynb?</h3>
-            <p className="text-xs text-purple-200 mt-1 mb-4 leading-relaxed">
-              Sube tu propio Jupyter Notebook desde tu ordenador para visualizarlo y ejecutarlo aquí al instante.
-            </p>
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handleFileChange}
-              accept=".ipynb,application/x-ipynb+json"
-              className="hidden"
-            />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="w-full py-2.5 px-4 rounded-full bg-white text-[#281434] hover:bg-purple-50 text-xs font-bold transition-all shadow-sm active:scale-95"
-            >
-              Seleccionar archivo .ipynb
-            </button>
           </div>
         </div>
 
-        {/* In-Progress Courses (if any) */}
+        {/* In-Progress Courses */}
         {enrolled.length > 0 && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -148,7 +144,7 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                 >
                   <div className="space-y-2">
                     <span className="text-[11px] font-bold text-purple-800 uppercase tracking-wider">
-                      {course.badge || 'Curso Inscrito'}
+                      {course.badge || 'Curso Asignado'}
                     </span>
                     <h3 className="text-base font-bold text-[#281434] line-clamp-1">
                       {course.title}
@@ -171,7 +167,7 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                       onClick={() => onOpenCoursePlayer(course)}
                       className="w-full mt-2 flex items-center justify-center gap-2 bg-[#724ae8] hover:bg-[#5d38cc] text-white font-semibold py-2.5 rounded-full text-xs shadow-xs transition-all active:scale-95"
                     >
-                      <span>Continuar donde lo dejaste</span>
+                      <span>Continuar Lección</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -186,26 +182,29 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <span className="text-xs font-bold text-purple-700 uppercase tracking-wider">
-                Explora el Catálogo
+                Catálogo de Cursos
               </span>
               <h2 className="text-2xl font-extrabold text-[#281434] tracking-tight">
-                Todos los cursos disponibles
+                Cursos Asignados en la Academia
               </h2>
             </div>
 
-            <button
-              onClick={onOpenCreator}
-              className="text-xs font-semibold text-[#724ae8] hover:text-[#5d38cc] flex items-center gap-1 group self-start sm:self-auto"
-            >
-              <span>+ Crear o importar curso</span>
-              <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-            </button>
+            {authUser?.role === 'admin' && (
+              <button
+                onClick={onOpenAdmin}
+                className="text-xs font-semibold text-[#724ae8] hover:text-[#5d38cc] flex items-center gap-1 group self-start sm:self-auto"
+              >
+                <span>+ Gestionar o añadir curso</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </button>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {courses.map(course => {
               const allLessons = course.sections.flatMap(s => s.lessons);
               const notebookLessons = allLessons.filter(l => l.type === 'notebook');
+              const videoLessons = allLessons.filter(l => l.type === 'video');
 
               return (
                 <div
@@ -219,7 +218,7 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                           {course.badge}
                         </span>
                       )}
-                      <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full">
+                      <span className="text-xs font-bold text-purple-800 bg-purple-50 px-2.5 py-0.5 rounded-full">
                         {course.price}
                       </span>
                     </div>
@@ -235,13 +234,17 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                       {course.tagline}
                     </p>
 
-                    <div className="flex items-center gap-4 text-xs text-stone-500 pt-2">
-                      <div className="flex items-center gap-1.5 font-medium">
-                        <FileCode className="w-4 h-4 text-purple-600" />
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-stone-500 pt-2">
+                      <div className="flex items-center gap-1 font-medium">
+                        <Video className="w-3.5 h-3.5 text-rose-500" />
+                        <span>{videoLessons.length} Vídeos</span>
+                      </div>
+                      <div className="flex items-center gap-1 font-medium">
+                        <FileCode className="w-3.5 h-3.5 text-purple-600" />
                         <span>{notebookLessons.length} Notebooks</span>
                       </div>
-                      <div className="flex items-center gap-1.5 font-medium">
-                        <BookOpen className="w-4 h-4 text-stone-400" />
+                      <div className="flex items-center gap-1 font-medium">
+                        <BookOpen className="w-3.5 h-3.5 text-stone-400" />
                         <span>{allLessons.length} Lecciones</span>
                       </div>
                     </div>
@@ -263,14 +266,14 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                         onClick={() => onSelectCourse(course)}
                         className="px-3.5 py-1.5 rounded-full text-xs font-semibold text-stone-700 hover:text-[#281434] hover:bg-white transition-colors"
                       >
-                        Ver detalles
+                        Temario
                       </button>
 
                       <button
                         onClick={() => onOpenCoursePlayer(course)}
                         className="flex items-center gap-1.5 bg-[#724ae8] hover:bg-[#5d38cc] text-white font-semibold px-4 py-1.5 rounded-full text-xs shadow-2xs transition-all active:scale-95"
                       >
-                        <span>Comenzar</span>
+                        <span>Entrar</span>
                         <ArrowRight className="w-3.5 h-3.5" />
                       </button>
                     </div>

@@ -1,4 +1,12 @@
-export type LessonType = 'notebook' | 'video' | 'article' | 'quiz';
+export type LessonType = 'video' | 'image' | 'article' | 'notebook' | 'audio' | 'quiz';
+
+export interface QuizQuestion {
+  id: string;
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation?: string;
+}
 
 export interface NotebookCellOutput {
   output_type: 'stream' | 'display_data' | 'execute_result' | 'error';
@@ -54,8 +62,15 @@ export interface Lesson {
   type: LessonType;
   durationMinutes: number;
   summary: string;
+  // Specific module types
   contentMarkdown?: string;
   videoUrl?: string;
+  imageUrl?: string;
+  imageCaption?: string;
+  audioUrl?: string;
+  audioTitle?: string;
+  quizQuestions?: QuizQuestion[];
+  // Jupyter Notebook module
   notebookData?: JupyterNotebook;
   rawNotebookJson?: string;
   notebookFileName?: string;
@@ -89,25 +104,43 @@ export interface Course {
   badge?: string;
   instructor: Instructor;
   coverImage?: string;
-  themeColor?: string; // Podia custom brand color
+  themeColor?: string;
   sections: Section[];
   features: string[];
   faq: {
     question: string;
     answer: string;
   }[];
-  price: string; // 'Gratis' or '$0'
+  price: string;
   isPublished: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
+export interface Student {
+  id: string;
+  name: string;
+  email: string;
+  enrolledCourseIds: string[];
+  status: 'active' | 'inactive';
+  createdAt: string;
+}
+
+export interface AuthUser {
+  role: 'admin' | 'student';
+  id: string;
+  name: string;
+  email: string;
+}
+
 export interface UserProgress {
   courseId: string;
+  userId?: string;
   completedLessonIds: string[];
   lastLessonId?: string;
   notes: Record<string, string>; // lessonId -> personal note
   comments: LessonComment[];
+  quizAnswers?: Record<string, Record<string, number>>; // lessonId -> questionId -> selectedOptionIndex
 }
 
 export interface LessonComment {
