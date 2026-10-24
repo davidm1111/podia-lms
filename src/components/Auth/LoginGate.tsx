@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { loginAsAdmin, loginAsStudent } from '../../lib/storage';
+import { loginAsTeacher, loginAsStudentWithPassword } from '../../lib/storage';
 import type { AuthUser } from '../../types';
 import {
   GraduationCap,
@@ -13,25 +13,26 @@ import {
 
 interface LoginGateProps {
   onLoginSuccess: (user: AuthUser) => void;
-  onContinueAsGuest?: () => void;
 }
 
 export const LoginGate: React.FC<LoginGateProps> = ({ onLoginSuccess }) => {
   const [activeTab, setActiveTab] = useState<'student' | 'admin'>('student');
 
   // Student form
-  const [studentEmail, setStudentEmail] = useState('');
+  const [studentIdentifier, setStudentIdentifier] = useState('');
+  const [studentPassword, setStudentPassword] = useState('');
   const [studentError, setStudentError] = useState<string | null>(null);
 
-  // Admin form
-  const [adminPassword, setAdminPassword] = useState('');
+  // Teacher / Admin form
+  const [teacherUser, setTeacherUser] = useState('');
+  const [teacherPassword, setTeacherPassword] = useState('');
   const [adminError, setAdminError] = useState<string | null>(null);
 
   const handleStudentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setStudentError(null);
 
-    const res = loginAsStudent(studentEmail);
+    const res = loginAsStudentWithPassword(studentIdentifier, studentPassword);
     if (res.success && res.student) {
       onLoginSuccess({
         role: 'student',
@@ -40,31 +41,31 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLoginSuccess }) => {
         email: res.student.email,
       });
     } else {
-      setStudentError(res.error || 'Correo no reconocido.');
+      setStudentError(res.error || 'Credenciales no válidas.');
     }
   };
 
-  const handleAdminSubmit = (e: React.FormEvent) => {
+  const handleTeacherSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setAdminError(null);
 
-    const ok = loginAsAdmin(adminPassword);
-    if (ok) {
+    const res = loginAsTeacher(teacherUser, teacherPassword);
+    if (res.success) {
       onLoginSuccess({
         role: 'admin',
-        id: 'admin-1',
-        name: 'Profesor / Administrador',
-        email: 'admin@academia.com',
+        id: 'teacher-1',
+        name: 'Profe',
+        email: 'profe@academia.com',
       });
     } else {
-      setAdminError('Contraseña incorrecta. (Prueba con: admin123)');
+      setAdminError(res.error || 'Credenciales de profesor incorrectas.');
     }
   };
 
   return (
     <div className="min-h-screen bg-[#faf8f5] flex flex-col justify-center items-center p-4 sm:p-6 text-[#2c2533]">
       <div className="max-w-md w-full space-y-8">
-        {/* Brand Header (No Podia trademark) */}
+        {/* Brand Header */}
         <div className="text-center space-y-3">
           <div className="w-14 h-14 rounded-3xl bg-[#281434] text-white flex items-center justify-center mx-auto shadow-md shadow-purple-950/20">
             <GraduationCap className="w-7 h-7 text-purple-300" />
@@ -73,13 +74,13 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLoginSuccess }) => {
           <div>
             <div className="inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-100 text-[#724ae8] mb-1">
               <Sparkles className="w-3 h-3" />
-              <span>Acceso Privado a la Academia</span>
+              <span>Acceso Privado</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#281434] tracking-tight">
               Portal Educativo
             </h1>
             <p className="text-xs text-stone-500 mt-1">
-              Inicia sesión con tu correo autorizado o accede como profesor.
+              Inicia sesión con tus credenciales asignadas para acceder.
             </p>
           </div>
         </div>
@@ -99,7 +100,7 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLoginSuccess }) => {
                   : 'text-stone-500 hover:text-stone-900'
               }`}
             >
-              Portal del Alumno
+              Acceso Alumno
             </button>
 
             <button
@@ -113,7 +114,7 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLoginSuccess }) => {
                   : 'text-stone-500 hover:text-stone-900'
               }`}
             >
-              Zona de Profesor
+              Zona Profesor
             </button>
           </div>
 
@@ -122,22 +123,36 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLoginSuccess }) => {
             <form onSubmit={handleStudentSubmit} className="space-y-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-stone-700">
-                  Tu Correo Electrónico Registrado
+                  Usuario o Correo Electrónico
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
                   <input
-                    type="email"
+                    type="text"
                     required
-                    value={studentEmail}
-                    onChange={(e) => setStudentEmail(e.target.value)}
-                    placeholder="ej. alumno@ejemplo.com"
+                    value={studentIdentifier}
+                    onChange={(e) => setStudentIdentifier(e.target.value)}
+                    placeholder="ej. david o davidmeirino@gmail.com"
                     className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 text-xs text-[#281434] focus:outline-none focus:ring-2 focus:ring-purple-200"
                   />
                 </div>
-                <p className="text-[11px] text-stone-400">
-                  El profesor debe haber registrado tu correo previamente.
-                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-stone-700">
+                  Contraseña
+                </label>
+                <div className="relative">
+                  <Lock className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
+                  <input
+                    type="password"
+                    required
+                    value={studentPassword}
+                    onChange={(e) => setStudentPassword(e.target.value)}
+                    placeholder="Introduce tu contraseña..."
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 text-xs text-[#281434] focus:outline-none focus:ring-2 focus:ring-purple-200"
+                  />
+                </div>
               </div>
 
               {studentError && (
@@ -156,20 +171,37 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLoginSuccess }) => {
               </button>
             </form>
           ) : (
-            /* Admin / Teacher Login Form */
-            <form onSubmit={handleAdminSubmit} className="space-y-4">
+            /* Teacher / Admin Login Form */
+            <form onSubmit={handleTeacherSubmit} className="space-y-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-stone-700">
-                  Contraseña de Profesor / Administrador
+                  Usuario de Profesor
+                </label>
+                <div className="relative">
+                  <ShieldLock className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
+                  <input
+                    type="text"
+                    required
+                    value={teacherUser}
+                    onChange={(e) => setTeacherUser(e.target.value)}
+                    placeholder="ej. profe"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 text-xs text-[#281434] focus:outline-none focus:ring-2 focus:ring-purple-200"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-bold text-stone-700">
+                  Contraseña de Profesor
                 </label>
                 <div className="relative">
                   <Lock className="w-4 h-4 text-stone-400 absolute left-3.5 top-3" />
                   <input
                     type="password"
                     required
-                    value={adminPassword}
-                    onChange={(e) => setAdminPassword(e.target.value)}
-                    placeholder="Introduce tu clave de profesor..."
+                    value={teacherPassword}
+                    onChange={(e) => setTeacherPassword(e.target.value)}
+                    placeholder="Introduce tu contraseña..."
                     className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-stone-200 text-xs text-[#281434] focus:outline-none focus:ring-2 focus:ring-purple-200"
                   />
                 </div>
@@ -191,28 +223,6 @@ export const LoginGate: React.FC<LoginGateProps> = ({ onLoginSuccess }) => {
               </button>
             </form>
           )}
-
-          {/* Quick Demo Credentials Reminder */}
-          <div className="pt-4 border-t border-stone-100 text-[11px] text-stone-500 bg-[#faf8f5] p-3 rounded-2xl space-y-1">
-            <span className="font-bold text-[#281434] block">Accesos de demostración listos:</span>
-            <div>
-              👨‍🎓 <strong>Alumno:</strong>{' '}
-              <button
-                type="button"
-                onClick={() => {
-                  setActiveTab('student');
-                  setStudentEmail('alumno@ejemplo.com');
-                }}
-                className="underline text-purple-700 font-mono"
-              >
-                alumno@ejemplo.com
-              </button>
-            </div>
-            <div>
-              🧑‍🏫 <strong>Profesor:</strong> Clave{' '}
-              <span className="font-mono font-bold text-purple-800">admin123</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>

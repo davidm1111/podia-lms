@@ -2,22 +2,22 @@
 
 @layer base {
   :root {
-    --podia-plum: #281434;
-    --podia-plum-light: #442456;
-    --podia-cream: #faf8f5;
-    --podia-cream-dark: #f0ebe1;
-    --podia-purple: #724ae8;
-    --podia-purple-hover: #5d38cc;
-    --podia-purple-light: #f3effe;
-    --podia-text: #2c2533;
-    --podia-text-muted: #6b6375;
-    --podia-border: #e9e4dc;
+    --brand-plum: #281434;
+    --brand-plum-light: #442456;
+    --brand-cream: #faf8f5;
+    --brand-cream-dark: #f0ebe1;
+    --brand-purple: #724ae8;
+    --brand-purple-hover: #5d38cc;
+    --brand-purple-light: #f3effe;
+    --brand-text: #2c2533;
+    --brand-text-muted: #6b6375;
+    --brand-border: #e9e4dc;
   }
 
   body {
-    background-color: var(--podia-cream);
-    color: var(--podia-text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--brand-cream);
+    color: var(--brand-text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     -webkit-font-smoothing: antialiased;
     margin: 0;
     padding: 0;

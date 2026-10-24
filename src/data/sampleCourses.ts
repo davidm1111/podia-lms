@@ -1,30 +1,38 @@
-import type { Course, JupyterNotebook, Student } from '../types';
+import type { Course, JupyterNotebook, Student, SiteConfig } from '../types';
 
-// Sample Default Students for the Teacher Portal
+// Default Site Configuration editable by the Professor
+export const defaultSiteConfig: SiteConfig = {
+  academyName: 'Academia Privada de Formación',
+  heroBadge: 'Plataforma Privada de Aprendizaje',
+  heroTitle: 'Aprende con Vídeo, Audio, Infografías y Código',
+  heroSubtitle: 'Accede a tus módulos formativos privados, laboratorios de código interactivo y cuestionarios de evaluación.',
+  heroCtaText: 'Ver Mi Plan de Estudios',
+  featuresTitle: 'Módulos y Metodología de la Academia',
+  features: [
+    { title: 'Vídeos HD', description: 'Lecciones explicativas paso a paso con reproductor adaptativo.' },
+    { title: 'Jupyter Notebooks (.ipynb)', description: 'Código Python interactivo ejecutable directamente en el navegador.' },
+    { title: 'Audios y Podcasts', description: 'Contenido sonoro para repasar conceptos clave.' },
+    { title: 'Cuestionarios Interactivos', description: 'Tests con corrección automática y explicación del profesor.' },
+  ],
+};
+
+// Default Students: David with full access to all courses
 export const defaultStudents: Student[] = [
   {
-    id: 'stud-1',
-    name: 'Elena García López',
-    email: 'elena@ejemplo.com',
+    id: 'stud-david',
+    name: 'David',
+    email: 'davidmeirino@gmail.com',
     enrolledCourseIds: ['course-python-ml', 'course-cloudflare-fullstack'],
     status: 'active',
     createdAt: '2026-03-01T10:00:00Z',
   },
   {
-    id: 'stud-2',
-    name: 'Carlos Ruiz Mendoza',
-    email: 'alumno@ejemplo.com',
-    enrolledCourseIds: ['course-python-ml'],
+    id: 'stud-david-short',
+    name: 'David',
+    email: 'david',
+    enrolledCourseIds: ['course-python-ml', 'course-cloudflare-fullstack'],
     status: 'active',
-    createdAt: '2026-03-05T14:20:00Z',
-  },
-  {
-    id: 'stud-3',
-    name: 'Sofia Chen Valdés',
-    email: 'sofia@ejemplo.com',
-    enrolledCourseIds: ['course-cloudflare-fullstack'],
-    status: 'active',
-    createdAt: '2026-03-12T09:15:00Z',
+    createdAt: '2026-03-01T10:00:00Z',
   },
 ];
 
@@ -50,10 +58,10 @@ export const notebookIntroPython: JupyterNotebook = {
       source: [
         '# Definición de estructuras de datos esenciales\n',
         'estudiante = {\n',
-        '    "nombre": "Elena García",\n',
+        '    "nombre": "David",\n',
         '    "modulo": "Inteligencia Artificial",\n',
-        '    "progreso": 85.5,\n',
-        '    "completado": False\n',
+        '    "progreso": 92.0,\n',
+        '    "completado": True\n',
         '}\n',
         '\n',
         'print(f"Estudiante: {estudiante[\'nombre\']} | Progreso: {estudiante[\'progreso\']}%")',
@@ -62,7 +70,7 @@ export const notebookIntroPython: JupyterNotebook = {
         {
           output_type: 'stream',
           name: 'stdout',
-          text: ['Estudiante: Elena García | Progreso: 85.5%\n'],
+          text: ['Estudiante: David | Progreso: 92.0%\n'],
         },
       ],
       metadata: {},
@@ -98,14 +106,14 @@ export const notebookIntroPython: JupyterNotebook = {
   nbformat_minor: 5,
 };
 
-// Default Courses with all Module Types: Video, Audio, Photo, Text, Code/Notebook, Quiz
+// Default Courses with Cloud Resources (Google Drive, Dropbox, etc.)
 export const defaultCourses: Course[] = [
   {
     id: 'course-python-ml',
     title: 'Python, Inteligencia Artificial y Machine Learning',
     slug: 'python-data-science-machine-learning',
     tagline: 'Aprende programación moderna, modelos de IA y análisis práctico con notebooks interactivos, vídeo y ejercicios.',
-    description: 'Un curso completo organizado por módulos multimedia: vídeo explicativo, guías de estudio, lecciones interactivas de código Python ejecutable en navegador, podcast de audio y cuestionarios con corrección instantánea.',
+    description: 'Un curso completo organizado por módulos multimedia: vídeo explicativo, guías de estudio, lecciones interactivas de código Python ejecutable en navegador, podcast de audio, cuestionarios y descargas desde Google Drive o Dropbox.',
     badge: 'Curso Principal',
     themeColor: '#724ae8',
     price: 'Acceso Privado',
@@ -113,28 +121,20 @@ export const defaultCourses: Course[] = [
     createdAt: '2026-01-15T10:00:00Z',
     updatedAt: '2026-03-20T14:30:00Z',
     instructor: {
-      name: 'Prof. David Rodriguez',
-      title: 'Director de Ingeniería y Formador de IA',
+      name: 'Profe',
+      title: 'Profesor y Director de Tecnología',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80',
-      bio: 'Especialista en arquitecturas serverless en la nube, Inteligencia Artificial aplicada y docencia tecnológica.',
+      bio: 'Especialista en desarrollo cloud-native, Inteligencia Artificial aplicada y docencia tecnológica.',
     },
     features: [
-      'Acceso privado y seguro exclusivo para alumnos registrados',
+      'Acceso privado exclusivo para alumnos registrados',
       'Módulos de Vídeo, Podcast de Audio, Infografías y Artículos',
       'Ejecución en vivo de código Python y Jupyter Notebooks (.ipynb)',
-      'Cuestionarios tipo test (Quizzes) con retroalimentación automática',
-      'Panel de profesor con control de alumnos y seguimiento de avances',
+      'Descargas directas desde Google Drive y Dropbox',
+      'Cuestionarios interactivos autocorregibles',
+      'Panel de profesor con control de alumnos y personalización de la portada',
     ],
-    faq: [
-      {
-        question: '¿Cómo acceden los alumnos a sus clases?',
-        answer: 'El profesor añade a los alumnos desde el Panel de Administración ingresando su correo electrónico. Los alumnos inician sesión ingresando su correo registrado para ver sus cursos autorizados.',
-      },
-      {
-        question: '¿Qué módulos multimedia soporta el creador de cursos?',
-        answer: 'Permite crear lecciones de Vídeo (YouTube, Vimeo, MP4), Infografía / Foto, Texto enriquecido, Cuadernos de Código interactivo (.ipynb), Podcast de Audio y Cuestionarios interactivos.',
-      },
-    ],
+    faq: [],
     sections: [
       {
         id: 'sec-1',
@@ -153,6 +153,20 @@ export const defaultCourses: Course[] = [
 - Presentación del entorno de trabajo
 - Cómo sacar el máximo partido a cada módulo multimedia
 - Recomendación de dedicar 25 minutos al día a la práctica de código.`,
+            resources: [
+              {
+                name: 'Diapositivas_Bienvenida.pdf (Google Drive)',
+                url: 'https://drive.google.com',
+                size: '2.4 MB',
+                provider: 'google-drive',
+              },
+              {
+                name: 'Material_Adicional.zip (Dropbox)',
+                url: 'https://www.dropbox.com',
+                size: '15.8 MB',
+                provider: 'dropbox',
+              },
+            ],
           },
           {
             id: 'les-img-1',
@@ -163,7 +177,7 @@ export const defaultCourses: Course[] = [
             summary: 'Diagrama visual de las capas de un proyecto de Inteligencia Artificial.',
             imageUrl: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80',
             imageCaption: 'Flujo de datos: Adquisición -> Limpieza con Pandas -> Modelado -> Despliegue en la Nube.',
-            contentMarkdown: `Analiza detenidamente la infografía antes de comenzar los ejercicios prácticos de código. Cada componente representa una etapa indispensable en el pipeline moderno.`,
+            contentMarkdown: `Analiza detenidamente la infografía antes de comenzar los ejercicios prácticos de código.`,
           },
           {
             id: 'les-aud-1',
@@ -196,7 +210,13 @@ export const defaultCourses: Course[] = [
             notebookData: notebookIntroPython,
             notebookFileName: 'fundamentos_python.ipynb',
             resources: [
-              { name: 'fundamentos_python.ipynb', url: '#', size: '14 KB' },
+              { name: 'fundamentos_python.ipynb', url: '#', size: '14 KB', provider: 'direct' },
+              {
+                name: 'Dataset_Ejercicios.csv (Dropbox)',
+                url: 'https://www.dropbox.com',
+                size: '4.2 MB',
+                provider: 'dropbox',
+              },
             ],
           },
           {
@@ -224,7 +244,7 @@ export const defaultCourses: Course[] = [
                   'Es un servicio de pago obligatorio',
                 ],
                 correctIndex: 0,
-                explanation: 'WebAssembly corre directamente en la máquina del usuario, permitiendo alojar el LMS en la capa gratuita de Cloudflare sin costes de servidor.',
+                explanation: 'WebAssembly corre directamente en la máquina del usuario, permitiendo alojar el LMS en Cloudflare sin costes de servidor.',
               },
               {
                 id: 'q3',
@@ -232,7 +252,7 @@ export const defaultCourses: Course[] = [
                 options: [
                   'Crear bucles infinitos controlados',
                   'Transformar y filtrar listas de manera concisa y elegante',
-                  'Conectar a una base de datos SQL remota',
+                  'Conectar a una base de datos remota',
                   'Generar gráficos vectoriales',
                 ],
                 correctIndex: 1,
@@ -257,8 +277,8 @@ export const defaultCourses: Course[] = [
     createdAt: '2026-02-10T11:00:00Z',
     updatedAt: '2026-03-22T09:15:00Z',
     instructor: {
-      name: 'Prof. David Rodriguez',
-      title: 'Director de Ingeniería y Formador de IA',
+      name: 'Profe',
+      title: 'Profesor y Director de Tecnología',
       avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&h=200&q=80',
       bio: 'Especialista en desarrollo cloud-native y optimización de costes de infraestructura.',
     },
@@ -290,7 +310,7 @@ Aprende a publicar aplicaciones estáticas y dinámicas utilizando Wrangler CLI:
 npm run build
 
 # Desplegar en Cloudflare Pages
-npx wrangler pages deploy dist --project-name mi-plataforma
+npx wrangler pages deploy dist --project-name aura-lms
 \`\`\`
 
 Todo el contenido se distribuye automáticamente en más de 300 centros de datos mundiales.`,

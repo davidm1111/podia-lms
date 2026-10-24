@@ -1,10 +1,34 @@
-import type { Course, UserProgress, LessonComment, Student, AuthUser } from '../types';
-import { defaultCourses, defaultStudents } from '../data/sampleCourses';
+import type { Course, UserProgress, LessonComment, Student, AuthUser, SiteConfig } from '../types';
+import { defaultCourses, defaultStudents, defaultSiteConfig } from '../data/sampleCourses';
 
-const COURSES_STORAGE_KEY = 'aura_lms_courses_v2';
-const STUDENTS_STORAGE_KEY = 'aura_lms_students_v2';
-const AUTH_STORAGE_KEY = 'aura_lms_auth_v2';
-const PROGRESS_STORAGE_KEY = 'aura_lms_progress_v2';
+const COURSES_STORAGE_KEY = 'aura_lms_courses_v3';
+const STUDENTS_STORAGE_KEY = 'aura_lms_students_v3';
+const AUTH_STORAGE_KEY = 'aura_lms_auth_v3';
+const PROGRESS_STORAGE_KEY = 'aura_lms_progress_v3';
+const SITE_CONFIG_STORAGE_KEY = 'aura_lms_site_config_v3';
+
+// ----------------- Site Configuration (Editable by Professor) -----------------
+export function getStoredSiteConfig(): SiteConfig {
+  try {
+    const raw = localStorage.getItem(SITE_CONFIG_STORAGE_KEY);
+    if (!raw) {
+      localStorage.setItem(SITE_CONFIG_STORAGE_KEY, JSON.stringify(defaultSiteConfig));
+      return defaultSiteConfig;
+    }
+    return JSON.parse(raw);
+  } catch (e) {
+    console.error('Error loading site config:', e);
+    return defaultSiteConfig;
+  }
+}
+
+export function saveSiteConfig(config: SiteConfig): void {
+  try {
+    localStorage.setItem(SITE_CONFIG_STORAGE_KEY, JSON.stringify(config));
+  } catch (e) {
+    console.error('Error saving site config:', e);
+  }
+}
 
 // ----------------- Courses -----------------
 export function getStoredCourses(): Course[] {
@@ -119,40 +143,72 @@ export function setAuthUser(user: AuthUser | null): void {
   }
 }
 
-// Default Admin credentials (can be entered by instructor)
-export function loginAsAdmin(password: string): boolean {
-  // Allow 'admin123' or 'profesor'
-  const normalized = password.trim();
-  if (normalized === 'admin123' || normalized === 'profesor' || normalized === 'admin') {
-    const adminUser: AuthUser = {
-      role: 'admin',
-      id: 'admin-1',
-      name: 'Profesor / Administrador',
-      email: 'admin@academia.com',
-    };
-    setAuthUser(adminUser);
-    return true;
+// Teacher / Admin Login: username 'profe' (or 'admin'), password '18111982z'
+export function loginAsTeacher(username: string, password: string): { success: boolean; error?: string } {
+  const cleanUser = username.trim().toLowerCase();
+  const cleanPass = password.trim();
+
+  const isUserValid = cleanUser === 'profe' || cleanUser === 'profesor' || cleanUser === 'profe@academia.com' || cleanUser === 'admin';
+  const isPassValid = cleanPass === '18111982z';
+
+  if (!isUserValid) {
+    return { success: false, error: 'Usuario no reconocido como profesor.' };
   }
-  return false;
+
+  if (!isPassValid) {
+    return { success: false, error: 'Contraseña incorrecta.' };
+  }
+
+  const teacherUser: AuthUser = {
+    role: 'admin',
+    id: 'teacher-1',
+    name: 'Profe',
+    email: 'profe@academia.com',
+  };
+  setAuthUser(teacherUser);
+  return { success: true };
 }
 
-// Gated Student Login: Student MUST exist in the teacher's authorized students list
-export function loginAsStudent(email: string): { success: boolean; student?: Student; error?: string } {
-  const cleanEmail = email.trim().toLowerCase();
+// Student Login: accepts 'david' or 'davidmeirino@gmail.com' or registered student email, password '18111982z'
+export function loginAsStudentWithPassword(
+  identifier: string,
+  password: string
+): { success: boolean; student?: Student; error?: string } {
+  const cleanId = identifier.trim().toLowerCase();
+  const cleanPass = password.trim();
+
+  // Validate password
+  if (cleanPass !== '18111982z') {
+    return { success: false, error: 'Contraseña incorrecta.' };
+  }
+
   const students = getStoredStudents();
-  const found = students.find(s => s.email.toLowerCase() === cleanEmail);
+  // Find matching student by email or name
+  let found = students.find(s => s.email.toLowerCase() === cleanId || s.name.toLowerCase() === cleanId);
+
+  // If identifier is 'david' and not yet found, auto-link to David
+  if (!found && cleanId === 'david') {
+    found = {
+      id: 'stud-david',
+      name: 'David',
+      email: 'davidmeirino@gmail.com',
+      enrolledCourseIds: getStoredCourses().map(c => c.id),
+      status: 'active',
+      createdAt: new Date().toISOString(),
+    };
+  }
 
   if (!found) {
     return {
       success: false,
-      error: 'Correo no registrado. Por favor, solicita acceso al profesor del curso.',
+      error: 'Usuario o correo no registrado. Contacta al profesor.',
     };
   }
 
   if (found.status === 'inactive') {
     return {
       success: false,
-      error: 'Tu acceso como alumno ha sido pausado. Contacta al profesor.',
+      error: 'Tu acceso como alumno está pausado por el profesor.',
     };
   }
 
@@ -221,19 +277,5 @@ export function saveLessonNote(courseId: string, lessonId: string, noteText: str
 export function addLessonComment(courseId: string, comment: LessonComment, userId: string = 'default'): void {
   const progress = getStoredProgress(courseId, userId);
   progress.comments.push(comment);
-  saveProgress(progress);
-}
-
-export function saveQuizAnswer(
-  courseId: string,
-  lessonId: string,
-  questionId: string,
-  optionIndex: number,
-  userId: string = 'default'
-): void {
-  const progress = getStoredProgress(courseId, userId);
-  if (!progress.quizAnswers) progress.quizAnswers = {};
-  if (!progress.quizAnswers[lessonId]) progress.quizAnswers[lessonId] = {};
-  progress.quizAnswers[lessonId][questionId] = optionIndex;
   saveProgress(progress);
 }

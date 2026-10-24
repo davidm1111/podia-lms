@@ -300,7 +300,7 @@ export const CoursePlayer: React.FC<CoursePlayerProps> = ({
               </div>
             )}
 
-            {/* Resources / Downloads Box */}
+            {/* Resources / Downloads Box (Supporting Google Drive, Dropbox, etc.) */}
             {activeLesson.resources && activeLesson.resources.length > 0 && (
               <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-2xs space-y-3">
                 <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-purple-900">
@@ -308,35 +308,51 @@ export const CoursePlayer: React.FC<CoursePlayerProps> = ({
                   <span>Archivos y Recursos Descargables</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {activeLesson.resources.map((res, idx) => (
-                    <a
-                      key={idx}
-                      href={res.url}
-                      onClick={(e) => {
-                        if (res.url === '#' && activeLesson.notebookData) {
-                          e.preventDefault();
-                          const blob = new Blob([JSON.stringify(activeLesson.notebookData, null, 2)], { type: 'application/json' });
-                          const url = URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = url;
-                          a.download = res.name;
-                          a.click();
-                        }
-                      }}
-                      className="flex items-center justify-between p-3 rounded-xl bg-[#faf8f5] hover:bg-purple-50/50 border border-stone-200/80 transition-colors group"
-                    >
-                      <div className="flex items-center gap-2 min-w-0 pr-2">
-                        <FileCode className="w-4 h-4 text-purple-600 shrink-0" />
-                        <span className="text-xs font-medium text-stone-800 truncate group-hover:text-purple-900">
-                          {res.name}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs text-stone-400">
-                        <span>{res.size || 'Descargar'}</span>
-                        <Download className="w-3.5 h-3.5 group-hover:translate-y-0.5 transition-transform" />
-                      </div>
-                    </a>
-                  ))}
+                  {activeLesson.resources.map((res, idx) => {
+                    const isExternal = res.url.startsWith('http://') || res.url.startsWith('https://');
+                    const isDrive = res.url.includes('drive.google.com') || res.name.toLowerCase().includes('drive') || res.provider === 'google-drive';
+                    const isDropbox = res.url.includes('dropbox.com') || res.name.toLowerCase().includes('dropbox') || res.provider === 'dropbox';
+
+                    return (
+                      <a
+                        key={idx}
+                        href={res.url}
+                        target={isExternal ? '_blank' : undefined}
+                        rel={isExternal ? 'noopener noreferrer' : undefined}
+                        onClick={(e) => {
+                          if (res.url === '#' && activeLesson.notebookData) {
+                            e.preventDefault();
+                            const blob = new Blob([JSON.stringify(activeLesson.notebookData, null, 2)], { type: 'application/json' });
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = res.name;
+                            a.click();
+                          }
+                        }}
+                        className="flex items-center justify-between p-3.5 rounded-2xl bg-[#faf8f5] hover:bg-purple-50/60 border border-stone-200/80 transition-all group"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0 pr-2">
+                          <div className={`p-1.5 rounded-lg ${
+                            isDrive ? 'bg-amber-100 text-amber-700' : isDropbox ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'
+                          }`}>
+                            <FileCode className="w-4 h-4 shrink-0" />
+                          </div>
+                          <div className="truncate">
+                            <span className="text-xs font-bold text-stone-800 truncate block group-hover:text-purple-900">
+                              {res.name}
+                            </span>
+                            <span className="text-[10px] text-stone-400">
+                              {isDrive ? 'Google Drive' : isDropbox ? 'Dropbox' : (res.size || 'Descarga')}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-xs text-stone-400 shrink-0">
+                          <Download className="w-4 h-4 group-hover:translate-y-0.5 text-purple-600 transition-transform" />
+                        </div>
+                      </a>
+                    );
+                  })}
                 </div>
               </div>
             )}

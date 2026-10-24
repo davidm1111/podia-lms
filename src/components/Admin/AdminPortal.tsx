@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import type { Course, Student } from '../../types';
+import type { Course, Student, SiteConfig } from '../../types';
 import { CourseEditor } from '../CourseCreator/CourseEditor';
 import { StudentManager } from './StudentManager';
+import { HomeEditor } from './HomeEditor';
 import {
   BookOpen,
   Users,
@@ -11,13 +12,16 @@ import {
   ShieldCheck,
   Zap,
   Eye,
+  LayoutTemplate,
 } from 'lucide-react';
 
 interface AdminPortalProps {
   courses: Course[];
   students: Student[];
+  siteConfig: SiteConfig;
   onSaveCourse: (course: Course) => void;
   onPreviewCourse: (course: Course) => void;
+  onSaveSiteConfig: (config: SiteConfig) => void;
   onAddStudent: (name: string, email: string, courseIds: string[]) => void;
   onUpdateStudent: (student: Student) => void;
   onDeleteStudent: (studentId: string) => void;
@@ -28,15 +32,17 @@ interface AdminPortalProps {
 export const AdminPortal: React.FC<AdminPortalProps> = ({
   courses,
   students,
+  siteConfig,
   onSaveCourse,
   onPreviewCourse,
+  onSaveSiteConfig,
   onAddStudent,
   onUpdateStudent,
   onDeleteStudent,
   onLogout,
   onOpenDeployModal,
 }) => {
-  const [activeTab, setActiveTab] = useState<'courses' | 'students' | 'cloud'>('courses');
+  const [activeTab, setActiveTab] = useState<'courses' | 'students' | 'home' | 'cloud'>('courses');
 
   return (
     <div className="min-h-screen bg-[#faf8f5] text-[#2c2533]">
@@ -46,7 +52,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2.5">
               <div className="w-10 h-10 rounded-2xl bg-purple-500/20 border border-purple-400/30 flex items-center justify-center text-purple-300 font-bold">
-                Admin
+                Profe
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -58,13 +64,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                   </span>
                 </div>
                 <p className="text-[11px] text-purple-200/70">
-                  Gestión integral de contenidos y acceso de alumnos
+                  Control de cursos, módulos, portada y alumnos
                 </p>
               </div>
             </div>
 
             {/* Admin Tabs */}
-            <nav className="hidden md:flex items-center gap-1 pl-4 border-l border-purple-900/60">
+            <nav className="hidden lg:flex items-center gap-1 pl-4 border-l border-purple-900/60">
               <button
                 onClick={() => setActiveTab('courses')}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
@@ -93,6 +99,18 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
               </button>
 
               <button
+                onClick={() => setActiveTab('home')}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                  activeTab === 'home'
+                    ? 'bg-white text-[#281434] shadow-xs'
+                    : 'text-purple-200 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <LayoutTemplate className="w-3.5 h-3.5" />
+                <span>Editar Portada</span>
+              </button>
+
+              <button
                 onClick={() => setActiveTab('cloud')}
                 className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all ${
                   activeTab === 'cloud'
@@ -101,7 +119,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
                 }`}
               >
                 <Cloud className="w-3.5 h-3.5" />
-                <span>Cloudflare &amp; Servidor</span>
+                <span>Cloudflare $0</span>
               </button>
             </nav>
           </div>
@@ -122,28 +140,34 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
               title="Cerrar sesión de profesor"
             >
               <LogOut className="w-3.5 h-3.5" />
-              <span>Cerrar sesión</span>
+              <span>Salir</span>
             </button>
           </div>
         </div>
 
         {/* Mobile Navigation bar */}
-        <div className="md:hidden flex items-center justify-around border-t border-purple-900/60 py-2 px-2 text-xs font-semibold">
+        <div className="lg:hidden flex items-center justify-around border-t border-purple-900/60 py-2 px-2 text-xs font-semibold overflow-x-auto">
           <button
             onClick={() => setActiveTab('courses')}
-            className={`px-3 py-1.5 rounded-xl ${activeTab === 'courses' ? 'bg-white text-[#281434]' : 'text-purple-200'}`}
+            className={`px-3 py-1.5 rounded-xl shrink-0 ${activeTab === 'courses' ? 'bg-white text-[#281434]' : 'text-purple-200'}`}
           >
             Cursos
           </button>
           <button
             onClick={() => setActiveTab('students')}
-            className={`px-3 py-1.5 rounded-xl ${activeTab === 'students' ? 'bg-white text-[#281434]' : 'text-purple-200'}`}
+            className={`px-3 py-1.5 rounded-xl shrink-0 ${activeTab === 'students' ? 'bg-white text-[#281434]' : 'text-purple-200'}`}
           >
             Alumnos ({students.length})
           </button>
           <button
+            onClick={() => setActiveTab('home')}
+            className={`px-3 py-1.5 rounded-xl shrink-0 ${activeTab === 'home' ? 'bg-white text-[#281434]' : 'text-purple-200'}`}
+          >
+            Portada
+          </button>
+          <button
             onClick={() => setActiveTab('cloud')}
-            className={`px-3 py-1.5 rounded-xl ${activeTab === 'cloud' ? 'bg-white text-[#281434]' : 'text-purple-200'}`}
+            className={`px-3 py-1.5 rounded-xl shrink-0 ${activeTab === 'cloud' ? 'bg-white text-[#281434]' : 'text-purple-200'}`}
           >
             Cloudflare
           </button>
@@ -168,6 +192,13 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
             onAddStudent={onAddStudent}
             onUpdateStudent={onUpdateStudent}
             onDeleteStudent={onDeleteStudent}
+          />
+        )}
+
+        {activeTab === 'home' && (
+          <HomeEditor
+            siteConfig={siteConfig}
+            onSaveSiteConfig={onSaveSiteConfig}
           />
         )}
 
@@ -227,7 +258,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
               <pre className="p-4 rounded-2xl bg-[#1e1b2e] text-stone-100 font-mono text-xs overflow-x-auto leading-relaxed">
 {`# 1. Compilar y publicar cambios en Cloudflare Pages
 npm run build
-npx wrangler pages deploy dist --project-name podia-lms
+npx wrangler pages deploy dist --project-name aura-lms
 
 # 2. Consultar registros de la base de datos D1
 npx wrangler d1 execute lms-database --command="SELECT COUNT(*) FROM courses;" --remote`}

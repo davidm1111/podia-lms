@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Course, AuthUser } from '../../types';
+import type { Course, AuthUser, SiteConfig } from '../../types';
 import { getStoredProgress } from '../../lib/storage';
 import {
   FileCode,
@@ -9,13 +9,13 @@ import {
   Cloud,
   Users,
   Video,
-  Headphones,
-  HelpCircle,
+  CheckCircle,
 } from 'lucide-react';
 
 interface CourseCatalogProps {
   courses: Course[];
   authUser: AuthUser | null;
+  siteConfig: SiteConfig;
   onSelectCourse: (course: Course) => void;
   onOpenCoursePlayer: (course: Course) => void;
   onOpenAdmin: () => void;
@@ -25,6 +25,7 @@ interface CourseCatalogProps {
 export const CourseCatalog: React.FC<CourseCatalogProps> = ({
   courses,
   authUser,
+  siteConfig,
   onSelectCourse,
   onOpenCoursePlayer,
   onOpenAdmin,
@@ -50,22 +51,22 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
   return (
     <div className="min-h-screen bg-[#faf8f5] py-10 px-4 sm:px-6 lg:px-8 text-[#2c2533]">
       <div className="max-w-6xl mx-auto space-y-12">
-        {/* Welcome Banner */}
+        {/* Dynamic Welcome Banner (Editable by Professor) */}
         <div className="bg-[#281434] text-white rounded-3xl p-8 sm:p-12 shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
           <div className="space-y-4 max-w-2xl text-center md:text-left z-10">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-400/30">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Plataforma de Formación Privada</span>
+              <span>{siteConfig.heroBadge}</span>
             </div>
 
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-              Aprende con <span className="text-purple-300">Vídeo, Audio y Código</span>
+              {siteConfig.heroTitle}
             </h1>
 
             <p className="text-stone-300 text-sm sm:text-base leading-relaxed">
               {authUser
-                ? `Bienvenido/a, ${authUser.name}. Tienes acceso exclusivo a tus módulos formativos, laboratorios de código interactivo y cuestionarios.`
-                : 'Accede a tus cursos autorizados con tus credenciales asignadas por el profesor.'}
+                ? `Hola ${authUser.name}. ${siteConfig.heroSubtitle}`
+                : siteConfig.heroSubtitle}
             </p>
 
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
@@ -73,7 +74,7 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                 onClick={() => onSelectCourse(courses[0])}
                 className="flex items-center gap-2 bg-[#724ae8] hover:bg-[#5d38cc] text-white font-bold py-3 px-6 rounded-full text-sm shadow-md transition-all active:scale-95"
               >
-                <span>Ver Mi Plan de Estudios</span>
+                <span>{siteConfig.heroCtaText}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
@@ -83,7 +84,7 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
                   className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-5 rounded-full text-sm backdrop-blur-xs transition-colors"
                 >
                   <Users className="w-4 h-4 text-purple-300" />
-                  <span>Gestionar Alumnos</span>
+                  <span>Panel de Profesor</span>
                 </button>
               ) : (
                 <button
@@ -97,28 +98,21 @@ export const CourseCatalog: React.FC<CourseCatalogProps> = ({
             </div>
           </div>
 
-          {/* Quick Learning Stats Card */}
-          <div className="w-full md:w-80 shrink-0 bg-white/5 backdrop-blur-md border border-white/10 p-6 rounded-3xl text-left z-10 space-y-4">
+          {/* Highlights Box (Editable by Professor) */}
+          <div className="w-full md:w-84 shrink-0 bg-white/5 backdrop-blur-md border border-white/10 p-5 rounded-3xl text-left z-10 space-y-3">
             <span className="text-[11px] font-bold uppercase tracking-wider text-purple-300 block">
-              Módulos Disponibles
+              {siteConfig.featuresTitle}
             </span>
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div className="p-3 bg-white/10 rounded-2xl flex items-center gap-2">
-                <Video className="w-4 h-4 text-rose-400" />
-                <span>Vídeos HD</span>
-              </div>
-              <div className="p-3 bg-white/10 rounded-2xl flex items-center gap-2">
-                <FileCode className="w-4 h-4 text-purple-300" />
-                <span>Python .ipynb</span>
-              </div>
-              <div className="p-3 bg-white/10 rounded-2xl flex items-center gap-2">
-                <Headphones className="w-4 h-4 text-amber-300" />
-                <span>Podcasts</span>
-              </div>
-              <div className="p-3 bg-white/10 rounded-2xl flex items-center gap-2">
-                <HelpCircle className="w-4 h-4 text-indigo-300" />
-                <span>Quizzes</span>
-              </div>
+            <div className="space-y-2">
+              {siteConfig.features.map((feat, idx) => (
+                <div key={idx} className="p-2.5 bg-white/10 rounded-2xl flex items-start gap-2.5 text-xs">
+                  <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold text-white block">{feat.title}</span>
+                    <span className="text-[11px] text-stone-300 leading-snug">{feat.description}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

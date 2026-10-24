@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { Course, Student, AuthUser } from './types';
+import type { Course, Student, AuthUser, SiteConfig } from './types';
 import {
   getStoredCourses,
   saveCourse,
@@ -9,6 +9,8 @@ import {
   deleteStudent,
   getAuthUser,
   logout,
+  getStoredSiteConfig,
+  saveSiteConfig,
 } from './lib/storage';
 import { Navbar } from './components/Navbar';
 import { LoginGate } from './components/Auth/LoginGate';
@@ -21,6 +23,7 @@ import { CloudflareDeployModal } from './components/CloudflareDeployModal';
 export function App() {
   const [courses, setCourses] = useState<Course[]>(() => getStoredCourses());
   const [students, setStudents] = useState<Student[]>(() => getStoredStudents());
+  const [siteConfig, setSiteConfig] = useState<SiteConfig>(() => getStoredSiteConfig());
   const [authUser, setAuthUserState] = useState<AuthUser | null>(() => getAuthUser());
   const [currentView, setCurrentView] = useState<'catalog' | 'landing' | 'player' | 'admin' | 'login'>(() => {
     const user = getAuthUser();
@@ -38,6 +41,12 @@ export function App() {
     if (selectedCourse.id === updatedCourse.id) {
       setSelectedCourse(updatedCourse);
     }
+  };
+
+  // Sync site configuration
+  const handleSaveSiteConfig = (updatedConfig: SiteConfig) => {
+    saveSiteConfig(updatedConfig);
+    setSiteConfig(updatedConfig);
   };
 
   // Student operations
@@ -74,7 +83,7 @@ export function App() {
   // Filter accessible courses for student
   const visibleCourses = authUser?.role === 'student'
     ? courses.filter(c => {
-        const studentRecord = students.find(s => s.email.toLowerCase() === authUser.email.toLowerCase());
+        const studentRecord = students.find(s => s.email.toLowerCase() === authUser.email.toLowerCase() || s.name.toLowerCase() === authUser.name.toLowerCase());
         return studentRecord?.enrolledCourseIds.includes(c.id) ?? true;
       })
     : courses;
@@ -86,7 +95,7 @@ export function App() {
     }
   }, [courses]);
 
-  // If user is not authenticated, show private login gate ("para q nadie entre por libre")
+  // If user is not authenticated, show private login gate
   if (!authUser || currentView === 'login') {
     return (
       <LoginGate
@@ -114,6 +123,7 @@ export function App() {
           <CourseCatalog
             courses={visibleCourses.length > 0 ? visibleCourses : courses}
             authUser={authUser}
+            siteConfig={siteConfig}
             onSelectCourse={(course) => {
               setSelectedCourse(course);
               setCurrentView('landing');
@@ -148,11 +158,13 @@ export function App() {
           <AdminPortal
             courses={courses}
             students={students}
+            siteConfig={siteConfig}
             onSaveCourse={handleSaveCourse}
             onPreviewCourse={(course) => {
               setSelectedCourse(course);
               setCurrentView('player');
             }}
+            onSaveSiteConfig={handleSaveSiteConfig}
             onAddStudent={handleAddStudent}
             onUpdateStudent={handleUpdateStudent}
             onDeleteStudent={handleDeleteStudent}

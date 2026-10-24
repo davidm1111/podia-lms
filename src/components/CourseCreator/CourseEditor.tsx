@@ -50,6 +50,10 @@ export const CourseEditor: React.FC<CourseEditorProps> = ({
   const [newLessonNotebook, setNewLessonNotebook] = useState<JupyterNotebook | null>(null);
   const [newLessonNotebookFileName, setNewLessonNotebookFileName] = useState('');
 
+  // Cloud Resource State (Google Drive / Dropbox)
+  const [newResourceName, setNewResourceName] = useState('');
+  const [newResourceUrl, setNewResourceUrl] = useState('');
+
   // Quiz questions state
   const [newQuizQuestions, setNewQuizQuestions] = useState<QuizQuestion[]>([
     {
@@ -138,6 +142,21 @@ export const CourseEditor: React.FC<CourseEditorProps> = ({
     e.preventDefault();
     if (!editingLessonSectionId || !newLessonTitle.trim()) return;
 
+    // Build resources array (including cloud Google Drive / Dropbox link)
+    const initialResources: any[] = [];
+    if (newLessonType === 'notebook' && newLessonNotebook) {
+      initialResources.push({ name: newLessonNotebookFileName || 'notebook.ipynb', url: '#', size: '15 KB', provider: 'direct' });
+    }
+    if (newResourceUrl.trim()) {
+      const isDrive = newResourceUrl.includes('drive.google.com');
+      const isDropbox = newResourceUrl.includes('dropbox.com');
+      initialResources.push({
+        name: newResourceName.trim() || (isDrive ? 'Documento en Google Drive' : isDropbox ? 'Carpeta en Dropbox' : 'Descarga Externa'),
+        url: newResourceUrl.trim(),
+        provider: isDrive ? 'google-drive' : isDropbox ? 'dropbox' : 'direct',
+      });
+    }
+
     const newLesson: Lesson = {
       id: `les-${Date.now()}`,
       title: newLessonTitle.trim(),
@@ -155,9 +174,7 @@ export const CourseEditor: React.FC<CourseEditorProps> = ({
       notebookData: newLessonType === 'notebook' ? newLessonNotebook || undefined : undefined,
       notebookFileName: newLessonNotebookFileName || undefined,
       quizQuestions: newLessonType === 'quiz' ? newQuizQuestions.filter(q => q.question.trim().length > 0) : undefined,
-      resources: newLessonType === 'notebook' && newLessonNotebook ? [
-        { name: newLessonNotebookFileName || 'notebook.ipynb', url: '#', size: '15 KB' }
-      ] : [],
+      resources: initialResources,
     };
 
     const updatedSections = selectedCourse.sections.map(sec => {
@@ -186,6 +203,8 @@ export const CourseEditor: React.FC<CourseEditorProps> = ({
     setNewLessonMarkdown('');
     setNewLessonNotebook(null);
     setNewLessonNotebookFileName('');
+    setNewResourceName('');
+    setNewResourceUrl('');
   };
 
   const handleDeleteLesson = (sectionId: string, lessonId: string) => {
@@ -722,6 +741,32 @@ export const CourseEditor: React.FC<CourseEditorProps> = ({
                   ))}
                 </div>
               )}
+
+              {/* Cloud Downloads (Google Drive / Dropbox) */}
+              <div className="p-4 rounded-2xl bg-purple-50/50 border border-purple-100 space-y-3">
+                <label className="text-xs font-bold text-purple-950 block">
+                  Material Descargable (Opcional - Google Drive, Dropbox o Enlace Directo)
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  <input
+                    type="text"
+                    value={newResourceName}
+                    onChange={(e) => setNewResourceName(e.target.value)}
+                    placeholder="Nombre del archivo (ej. Proyecto_Final.zip)"
+                    className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-white text-xs text-[#281434] focus:outline-none focus:ring-2 focus:ring-purple-200"
+                  />
+                  <input
+                    type="url"
+                    value={newResourceUrl}
+                    onChange={(e) => setNewResourceUrl(e.target.value)}
+                    placeholder="URL de Google Drive o Dropbox..."
+                    className="w-full px-3 py-2 rounded-xl border border-stone-200 bg-white text-xs text-[#281434] focus:outline-none focus:ring-2 focus:ring-purple-200"
+                  />
+                </div>
+                <p className="text-[11px] text-stone-500">
+                  Pega el enlace de compartir de Google Drive o Dropbox para que los alumnos lo descarguen con un clic.
+                </p>
+              </div>
 
               {/* Modal Buttons */}
               <div className="mt-6 flex justify-end gap-2 pt-3 border-t border-stone-100">

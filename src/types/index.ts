@@ -8,6 +8,13 @@ export interface QuizQuestion {
   explanation?: string;
 }
 
+export interface LessonResource {
+  name: string;
+  url: string;
+  size?: string;
+  provider?: 'google-drive' | 'dropbox' | 'github' | 'direct';
+}
+
 export interface NotebookCellOutput {
   output_type: 'stream' | 'display_data' | 'execute_result' | 'error';
   name?: string; // 'stdout' | 'stderr'
@@ -62,7 +69,7 @@ export interface Lesson {
   type: LessonType;
   durationMinutes: number;
   summary: string;
-  // Specific module types
+  // Module types
   contentMarkdown?: string;
   videoUrl?: string;
   imageUrl?: string;
@@ -74,11 +81,8 @@ export interface Lesson {
   notebookData?: JupyterNotebook;
   rawNotebookJson?: string;
   notebookFileName?: string;
-  resources?: {
-    name: string;
-    url: string;
-    size?: string;
-  }[];
+  // Downloadable cloud resources (Dropbox, Google Drive, direct links)
+  resources?: LessonResource[];
 }
 
 export interface Section {
@@ -133,14 +137,27 @@ export interface AuthUser {
   email: string;
 }
 
+export interface SiteConfig {
+  academyName: string;
+  heroBadge: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  heroCtaText: string;
+  featuresTitle: string;
+  features: {
+    title: string;
+    description: string;
+  }[];
+}
+
 export interface UserProgress {
   courseId: string;
   userId?: string;
   completedLessonIds: string[];
   lastLessonId?: string;
-  notes: Record<string, string>; // lessonId -> personal note
+  notes: Record<string, string>;
   comments: LessonComment[];
-  quizAnswers?: Record<string, Record<string, number>>; // lessonId -> questionId -> selectedOptionIndex
+  quizAnswers?: Record<string, Record<string, number>>;
 }
 
 export interface LessonComment {
