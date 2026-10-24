@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "podia-lms-cloudflare",
+  "compatibility_date": "2026-03-01",
+  "pages_build_output_dir": "./dist",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "lms-database",
+      "database_id": "YOUR_D1_DATABASE_ID_OPTIONAL"
+    }
+  ]
+}
